@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:new_on_the_tee/widgets/buttomsheets.dart';
+import 'package:new_on_the_tee/widgets/login_buttomsheets.dart';
 
 class LoginSignup extends StatefulWidget {
   const LoginSignup({super.key});
@@ -10,10 +10,17 @@ class LoginSignup extends StatefulWidget {
 }
 
 class _LoginSignupState extends State<LoginSignup> {
-  bool getstarted = false;
-  bool signup = false;
-  bool login = false;
   bool intro = false;
+  bool signup = true;
+  bool login = false;
+  // bool intro = false;
+  openLoginSection() {
+    setState(() {
+      signup = false;
+      login = true;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,13 +44,31 @@ class _LoginSignupState extends State<LoginSignup> {
             ),
             Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.3),
+                  // color: Colors.grey.withOpacity(0.5),
+                  gradient: LinearGradient(colors: [
+                    Colors.grey.withOpacity(0.5),
+                    Colors.black.withOpacity(0.5),
+                  ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20.r),
                     topRight: Radius.circular(20.r),
                   ),
                 ),
-                child: SignUp()),
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 20.h, horizontal: 15.w),
+                  child: Column(
+                    children: [
+                      Visibility(
+                          visible: signup,
+                          child: SignUp(
+                            loginPressed: openLoginSection,
+                          )),
+                      Visibility(visible: login, child: Login()),
+                      Visibility(visible: intro, child: Intro()),
+                    ],
+                  ),
+                )),
           ],
         ),
       ),

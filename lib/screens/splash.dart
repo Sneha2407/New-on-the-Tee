@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:new_on_the_tee/widgets/buttomsheets.dart';
+import 'package:new_on_the_tee/widgets/login_buttomsheets.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
