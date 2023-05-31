@@ -1,27 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:new_on_the_tee/widgets/bottomsheets.dart';
 import 'package:new_on_the_tee/widgets/login_buttomsheets.dart';
 
-class LoginSignup extends StatefulWidget {
-  const LoginSignup({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<LoginSignup> createState() => _LoginSignupState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginSignupState extends State<LoginSignup> {
-  bool intro = false;
-  bool signup = true;
-  bool login = false;
-  // bool intro = false;
-  openLoginSection() {
-    setState(() {
-      signup = false;
-      login = true;
-    });
-  }
-
+class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,18 +46,10 @@ class _LoginSignupState extends State<LoginSignup> {
                 child: Padding(
                   padding:
                       EdgeInsets.symmetric(vertical: 20.h, horizontal: 15.w),
-                  child: Column(
+                  child: const Column(
                     children: [
-                      // ElevatedButton(
-                      //     onPressed: openLoginSection,
-                      //     child: Text("Open login")),
-                      Visibility(
-                          visible: signup,
-                          child: SignUp(
-                            loginPressed: openLoginSection,
-                          )),
-                      Visibility(visible: login, child: Login()),
-                      Visibility(visible: intro, child: Intro()),
+                      Login(),
+                      // Visibility(visible: intro, child: Intro()),
                     ],
                   ),
                 )),

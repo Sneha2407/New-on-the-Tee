@@ -15,6 +15,27 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int selectedIndex = -1;
   List buttonTitles = ["Email", "Home Town", "Favorites"];
+
+  // @override
+  // void initState() {
+  //   showBottom(context, 4);
+  //   super.initState();
+  // }
+
+  @override
+  void initState() {
+    getData();
+    super.initState();
+  }
+
+  getData() {
+    Future.delayed(const Duration(seconds: 1), () {
+      // context.goNamed(AppRoute.getStartedPage.name);
+      // openBottomSheet(context, Message());
+      showBottom(context, 4);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,7 +153,71 @@ class _HomePageState extends State<HomePage> {
                     },
                   );
                 }),
-          )
+          ),
+          // SizedBox(
+          //   height: 20.h,
+          // ),
+          Flexible(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+              child: ListView.builder(
+                // shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                physics: AlwaysScrollableScrollPhysics(),
+                itemCount: 10, // Assuming you have only one item in the list
+                itemBuilder: (BuildContext context, int index) {
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            height: 45.h,
+                            width: 45.w,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              image: const DecorationImage(
+                                image: NetworkImage(
+                                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsynwv-5qtogtOwJbIjaPFJUmHpzhxgqIAug&usqp=CAU",
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 10.w),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Guy Hawkins",
+                                  style: montserrat(Kcolors.black, 14)
+                                      .copyWith(fontWeight: FontWeight.w600),
+                                ),
+                                SizedBox(height: 5.h),
+                                Text(
+                                  "kenzi.lawson@example.com | pembroke pines",
+                                  style: montserrat(Kcolors.grey400, 10),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Image.asset(
+                              "assets/icons/heart.png",
+                              height: 20.h,
+                              width: 20.w,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 5.h),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
         ],
       ),
     );

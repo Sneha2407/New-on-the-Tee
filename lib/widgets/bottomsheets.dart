@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_on_the_tee/utils/colors.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
+import 'package:new_on_the_tee/widgets/input_field.dart';
 
 Future showBottom(BuildContext context, int index) {
   return showModalBottomSheet(
@@ -30,17 +31,17 @@ Future showBottom(BuildContext context, int index) {
 Widget getView(int index) {
   switch (index) {
     case 1:
-      return EmailSelection();
+      return const EmailSelection();
     case 2:
-      return HomeTown();
+      return const HomeTown();
     case 3:
-      return Favorites();
+      return const Favorites();
     case 4:
-      return Message();
+      return const Message();
     case 5:
-      return ChangePassword();
+      return const ChangePassword();
     default:
-      return EmailSelection();
+      return const EmailSelection();
   }
 }
 
@@ -94,6 +95,14 @@ class _EmailSelectionState extends State<EmailSelection> {
           SizedBox(
             height: 20.h,
           ),
+          SingleSelectActionChip(items: const [
+            "felicia.r@example.com",
+            "riya11.p@example.com",
+            "curtis.weaver@example.com",
+          ], onTap: (val) {}, selectedItem: ""),
+          SizedBox(
+            height: 20.h,
+          ),
           SizedBox(
             height: 40.h,
             width: double.infinity,
@@ -137,11 +146,14 @@ class _HomeTownState extends State<HomeTown> {
       padding: EdgeInsets.symmetric(vertical: 20.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Home Town",
-            style: mcLaren(Kcolors.black, 14),
+          Align(
+            alignment: Alignment.center,
+            child: Text(
+              "Home Town",
+              style: mcLaren(Kcolors.black, 14),
+            ),
           ),
           SizedBox(
             height: 20.h,
@@ -170,6 +182,16 @@ class _HomeTownState extends State<HomeTown> {
               ),
             ),
           ),
+          SizedBox(
+            height: 20.h,
+          ),
+          SingleSelectActionChip(items: const [
+            "New York Office",
+            "Los Angeles",
+            "Paris",
+            "Kolkata",
+            "Sydney"
+          ], onTap: (val) {}, selectedItem: "abc"),
           SizedBox(
             height: 20.h,
           ),
@@ -294,8 +316,9 @@ class Message extends StatelessWidget {
             height: 20.h,
           ),
           Text(
-            "Thank you, Your Account has been made.",
+            "Thank you, your account has been made. Check your email for the auto generated password and login to hear your intro at https://nowenthetee.com/login",
             style: mcLaren(Kcolors.black, 14),
+            textAlign: TextAlign.center,
           ),
           SizedBox(
             height: 20.h,

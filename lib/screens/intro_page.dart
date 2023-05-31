@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:new_on_the_tee/widgets/bottomsheets.dart';
 import 'package:new_on_the_tee/widgets/login_buttomsheets.dart';
 
-class LoginSignup extends StatefulWidget {
-  const LoginSignup({super.key});
+class IntroPage extends StatefulWidget {
+  const IntroPage({super.key});
 
   @override
-  State<LoginSignup> createState() => _LoginSignupState();
+  State<IntroPage> createState() => _IntroPageState();
 }
 
-class _LoginSignupState extends State<LoginSignup> {
+class _IntroPageState extends State<IntroPage> {
   bool intro = false;
   bool signup = true;
   bool login = false;
@@ -65,9 +64,9 @@ class _LoginSignupState extends State<LoginSignup> {
                       //     child: Text("Open login")),
                       Visibility(
                           visible: signup,
-                          child: SignUp(
-                            loginPressed: openLoginSection,
-                          )),
+                          child: Intro(
+                              // loginPressed: openLoginSection,
+                              )),
                       Visibility(visible: login, child: Login()),
                       Visibility(visible: intro, child: Intro()),
                     ],
