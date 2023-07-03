@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.new_on_the_tee">
+    package="com.now.tee">
     <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="new_on_the_tee"
