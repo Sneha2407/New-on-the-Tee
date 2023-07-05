@@ -5,6 +5,8 @@ import 'package:new_on_the_tee/utils/colors.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
 import 'package:new_on_the_tee/widgets/input_field.dart';
 
+import '../screens/home_page.dart';
+
 Future showBottom(BuildContext context, int index) {
   return showModalBottomSheet(
     context: context,
@@ -328,7 +330,13 @@ class Message extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  // Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomePage(),
+                    ),
+                  );
                 },
                 child: Text(
                   "Dashboard",

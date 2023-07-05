@@ -24,17 +24,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    getData();
+    // getData();
     super.initState();
   }
 
-  getData() {
-    Future.delayed(const Duration(seconds: 1), () {
-      // context.goNamed(AppRoute.getStartedPage.name);
-      // openBottomSheet(context, Message());
-      showBottom(context, 4);
-    });
-  }
+  // getData() {
+  //   Future.delayed(const Duration(seconds: 1), () {
+  //     // context.goNamed(AppRoute.getStartedPage.name);
+  //     // openBottomSheet(context, Message());
+  //     showBottom(context, 4);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -207,6 +207,7 @@ class _HomePageState extends State<HomePage> {
                               "assets/icons/heart.png",
                               height: 20.h,
                               width: 20.w,
+                              color: Kcolors.brandGreen,
                             ),
                           ),
                         ],

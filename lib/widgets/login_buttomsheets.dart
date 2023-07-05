@@ -6,6 +6,7 @@ import 'package:new_on_the_tee/screens/intro_page.dart';
 import 'package:new_on_the_tee/screens/login.dart';
 import 'package:new_on_the_tee/screens/login_signup.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
+import 'package:new_on_the_tee/widgets/bottomsheets.dart';
 import 'package:new_on_the_tee/widgets/buttons.dart';
 
 import '../utils/colors.dart';
@@ -403,7 +404,7 @@ class _LoginState extends State<Login> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const IntroPage(),
+                      builder: (context) => const HomePage(),
                     ),
                   );
                 },
@@ -515,12 +516,13 @@ class _IntroState extends State<Intro> {
           width: double.infinity,
           child: ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomePage(),
-                  ),
-                );
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => const HomePage(),
+                //   ),
+                // );
+                showBottom(context, 4);
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Kcolors.brandGreen),

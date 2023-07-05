@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   getData() {
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 2), () {
       // context.goNamed(AppRoute.getStartedPage.name);
       openBottomSheet(context, GetStarted());
     });
