@@ -444,8 +444,21 @@ class _LoginState extends State<Login> {
                   // );
                   print(_emailController.text);
                   print(_passwordController.text);
-                  authProvider.loginUser(
-                      _emailController.text, _passwordController.text, context);
+                  authProvider
+                      .loginUser(_emailController.text,
+                          _passwordController.text, context)
+                      .onError((error, stackTrace) =>
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.red.withOpacity(0.5),
+                              behavior: SnackBarBehavior.floating,
+                              margin: EdgeInsets.only(top: 70.h),
+                              content: Text(
+                                error.toString(),
+                                style: mcLaren(Kcolors.white, 12),
+                              ),
+                            ),
+                          ));
                 },
                 style: ButtonStyle(
                   backgroundColor:
@@ -561,29 +574,20 @@ class _IntroState extends State<Intro> {
               onPressed: () {
                 //register api called
                 print("Register api called");
-                // authProvider
-                //     .postUser(storageProvider.name!, storageProvider.email!,
-                //         _introController.text, storageProvider.city!)
-                //     .then((value) {
-                //   showBottom(context, 4);
-                // }).onError((error, stackTrace) {
-                //   //
-                //   ScaffoldMessenger.of(context).showSnackBar(
-                //     SnackBar(
-                //       backgroundColor: Colors.red,
-                //       content: Text(
-                //         'Error! $error',
-                //         style: mcLaren(Kcolors.white, 15),
-                //       ),
-                //     ),
-                //   );
-                // });
-                authProvider.postUser(
-                    storageProvider.name!,
-                    storageProvider.email!,
-                    _introController.text,
-                    storageProvider.city!,
-                    context);
+
+                authProvider
+                    .postUser(storageProvider.name!, storageProvider.email!,
+                        _introController.text, storageProvider.city!, context)
+                    .onError((error, stackTrace) =>
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.red.withOpacity(0.5),
+                            content: Text(
+                              error.toString(),
+                              style: mcLaren(Kcolors.white, 12),
+                            ),
+                          ),
+                        ));
                 // showBottom(context, 4);
               },
               style: ButtonStyle(

@@ -56,7 +56,7 @@ class DashboardProvider with ChangeNotifier {
       print('Success: ${favResponse.success}');
       print('Code: ${favResponse.code}');
     } else {
-      throw Exception('Failed to fetch data');
+      throw Exception('Failed to update Favourite!');
     }
   }
 }

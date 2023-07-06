@@ -6,20 +6,20 @@ LoginResponse loginResponseFromJson(String str) =>
 String loginResponseToJson(LoginResponse data) => json.encode(data.toJson());
 
 class LoginResponse {
-  String message;
-  bool success;
-  int code;
-  String accessToken;
-  String tokenType;
-  int expiresIn;
+  String? message;
+  bool? success;
+  int? code;
+  String? accessToken;
+  String? tokenType;
+  int? expiresIn;
 
   LoginResponse({
-    required this.message,
-    required this.success,
-    required this.code,
-    required this.accessToken,
-    required this.tokenType,
-    required this.expiresIn,
+    this.message,
+    this.success,
+    this.code,
+    this.accessToken,
+    this.tokenType,
+    this.expiresIn,
   });
 
   factory LoginResponse.fromJson(Map<String, dynamic> json) => LoginResponse(

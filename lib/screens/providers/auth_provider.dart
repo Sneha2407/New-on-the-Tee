@@ -60,7 +60,7 @@ class RegisterProvider extends ChangeNotifier {
       //show snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.red.withOpacity(0.5),
           content: Text(
             'Error! ${registerResponse.message}',
             //  ${response.statusCode}! ${loginResponseMessage ?? ""}',
@@ -68,6 +68,8 @@ class RegisterProvider extends ChangeNotifier {
           ),
         ),
       );
+    } else {
+      throw Exception('Failed to Register!');
     }
 
     notifyListeners();
@@ -83,10 +85,21 @@ class RegisterProvider extends ChangeNotifier {
       'password': password,
     };
 
-    final response = await http.post(Uri.parse(url), body: body);
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $accessToken',
+      'Connection': 'keep-alive'
+    };
+
+    final response = await http.post(
+      Uri.parse(url),
+      body: json.encode(body), // Encode the body as a JSON string
+      headers: headers,
+    );
 
     final jsonResponse = json.decode(response.body);
     final loginResponse = LoginResponse.fromJson(jsonResponse);
+
     if (loginResponse.success == true) {
       print('Message: ${loginResponse.message}');
       print('Success: ${loginResponse.success}');
@@ -94,59 +107,28 @@ class RegisterProvider extends ChangeNotifier {
 
       setLoginMessage(loginResponse.message ?? "");
       setAccessToken(loginResponse.accessToken ?? "");
-      //push to home page
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomePage(),
-          ));
-    } else {
-      final jsonResponseError = json.decode(response.body);
-      final loginResponseErr = LoginErrorResponse.fromJson(jsonResponseError);
-      print('Message: ${loginResponseErr.message}');
 
+      // Push to the home page
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
+      );
+    } else if (loginResponse.success == false) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.red.withOpacity(0.5),
           content: Text(
-            'Error',
-            //  ${response.statusCode}! ${loginResponseMessage ?? ""}',
+            'Error ${loginResponse.message}',
             style: mcLaren(Kcolors.white, 15),
           ),
         ),
       );
+    } else {
+      throw Exception('Failed to Login!');
     }
 
     notifyListeners();
   }
-
-  // //register user method 2
-  // Future<void> registerUser(
-  //     String name, String email, String place, String city) async {
-  //   final url = 'https://fortmindz.co.in/nowOnTheTee_API/public/api/register';
-
-  //   final body = {
-  //     'name': name,
-  //     'email': email,
-  //     'place': place,
-  //     'city': city,
-  //   };
-
-  //   final response = await http.post(Uri.parse(url), body: body);
-
-  //   if (response.statusCode == 200) {
-  //     final jsonResponse = json.decode(response.body);
-  //     final registerResponse = RegisterResponse.fromJson(jsonResponse);
-  //     // setState(() {
-  //     //   message = registerResponse.message;
-  //     // });
-  //     // _responseMessage = registerResponse.message;
-  //     setMessage(registerResponse.message ?? "");
-  //     print('Message: ${registerResponse.message}');
-  //     print('Success: ${registerResponse.success}');
-  //     print('Code: ${registerResponse.code}');
-  //   } else {
-  //     print('Request failed with status: ${response.statusCode}');
-  //   }
-  // }
 }

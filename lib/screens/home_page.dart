@@ -245,7 +245,8 @@ class _HomePageState extends State<HomePage> {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           SnackBar(
-                                            backgroundColor: Colors.red,
+                                            backgroundColor:
+                                                Colors.red.withOpacity(0.5),
                                             content: Text(
                                               'Error! Failed to update Favourite',
                                               style: mcLaren(Kcolors.white, 15),
