@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:new_on_the_tee/widgets/bottomsheets.dart';
 import 'package:new_on_the_tee/widgets/login_buttomsheets.dart';
 
 class LoginSignup extends StatefulWidget {

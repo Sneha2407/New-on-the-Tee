@@ -1,14 +1,18 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:new_on_the_tee/screens/home_page.dart';
 import 'package:new_on_the_tee/screens/intro_page.dart';
 import 'package:new_on_the_tee/screens/login.dart';
 import 'package:new_on_the_tee/screens/login_signup.dart';
+import 'package:new_on_the_tee/screens/providers/auth_provider.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
 import 'package:new_on_the_tee/widgets/bottomsheets.dart';
-import 'package:new_on_the_tee/widgets/buttons.dart';
+import 'package:provider/provider.dart';
 
+import '../screens/providers/storage_provider.dart';
 import '../utils/colors.dart';
 
 Future openBottomSheet(BuildContext context, Widget child) {
@@ -36,34 +40,39 @@ class GetStarted extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 20.h),
-      child: SizedBox(
-        height: 40.h,
-        width: double.infinity,
-        child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginSignup(),
-                ),
-              );
-            },
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Kcolors.brandGreen),
-              elevation: MaterialStateProperty.all(0),
-              shape: MaterialStateProperty.all(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.r),
-                  // side:  BorderSide(color: Kcolors.grey300),
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 20.h),
+        child: SizedBox(
+          height: 40.h,
+          width: double.infinity,
+          child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginSignup(),
+                  ),
+                );
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Kcolors.brandGreen),
+                elevation: MaterialStateProperty.all(0),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.r),
+                    // side:  BorderSide(color: Kcolors.grey300),
+                  ),
                 ),
               ),
-            ),
-            child: Text(
-              "Get Started",
-              style: mcLaren(Kcolors.white, 15),
-            )),
+              child: Text(
+                "Get Started",
+                style: mcLaren(Kcolors.white, 15),
+              )),
+        ),
       ),
     );
   }
@@ -78,8 +87,14 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  //controllers
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _cityController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final storeProvider = Provider.of<StorageProvider>(context, listen: false);
     return Padding(
       // padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 15.w),
       padding: EdgeInsets.only(
@@ -121,6 +136,9 @@ class _SignUpState extends State<SignUp> {
             height: 5.h,
           ),
           TextFormField(
+            //change text color
+            style: mcLaren(Kcolors.white, 14),
+            controller: _nameController,
             decoration: InputDecoration(
               hintText: "Name",
               hintStyle: mcLaren(Kcolors.grey400, 14),
@@ -149,6 +167,8 @@ class _SignUpState extends State<SignUp> {
             height: 5.h,
           ),
           TextFormField(
+            style: mcLaren(Kcolors.white, 14),
+            controller: _cityController,
             decoration: InputDecoration(
               hintText: "Kolkata",
               hintStyle: mcLaren(Kcolors.grey400, 14),
@@ -185,6 +205,8 @@ class _SignUpState extends State<SignUp> {
             height: 5.h,
           ),
           TextFormField(
+            style: mcLaren(Kcolors.white, 14),
+            controller: _emailController,
             decoration: InputDecoration(
               hintText: "example@gmail.com",
               hintStyle: mcLaren(Kcolors.grey400, 14),
@@ -215,7 +237,12 @@ class _SignUpState extends State<SignUp> {
             width: double.infinity,
             child: ElevatedButton(
                 onPressed: () {
+                  //
                   print("Signup pressed");
+
+                  storeProvider.setName(_nameController.text);
+                  storeProvider.setEmail(_emailController.text);
+                  storeProvider.setCity(_cityController.text);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -281,8 +308,12 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   bool obscureText = false;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<RegisterProvider>(context);
     return Padding(
       // padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 15.w),
       padding: EdgeInsets.only(
@@ -324,6 +355,8 @@ class _LoginState extends State<Login> {
             height: 5.h,
           ),
           TextFormField(
+            style: mcLaren(Kcolors.white, 14),
+            controller: _emailController,
             decoration: InputDecoration(
               hintText: "example@gmail.com",
               hintStyle: mcLaren(Kcolors.grey400, 14),
@@ -360,6 +393,8 @@ class _LoginState extends State<Login> {
             height: 5.h,
           ),
           TextFormField(
+            style: mcLaren(Kcolors.white, 14),
+            controller: _passwordController,
             obscureText: obscureText,
             decoration: InputDecoration(
               hintText: "password",
@@ -400,13 +435,17 @@ class _LoginState extends State<Login> {
             width: double.infinity,
             child: ElevatedButton(
                 onPressed: () {
-                  print("Signup pressed");
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(),
-                    ),
-                  );
+                  print("login pressed");
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => const HomePage(),
+                  //   ),
+                  // );
+                  print(_emailController.text);
+                  print(_passwordController.text);
+                  authProvider.loginUser(
+                      _emailController.text, _passwordController.text, context);
                 },
                 style: ButtonStyle(
                   backgroundColor:
@@ -455,9 +494,12 @@ class Intro extends StatefulWidget {
 }
 
 class _IntroState extends State<Intro> {
-  TextEditingController textFieldController = TextEditingController();
+  final TextEditingController _introController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<RegisterProvider>(context, listen: false);
+    final storageProvider =
+        Provider.of<StorageProvider>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -495,7 +537,8 @@ class _IntroState extends State<Intro> {
         ),
         TextFormField(
           maxLines: 7,
-          controller: textFieldController,
+          style: mcLaren(Kcolors.white, 14),
+          controller: _introController,
           decoration: InputDecoration(
             hintStyle: mcLaren(Kcolors.grey400, 14),
             focusedBorder: OutlineInputBorder(
@@ -516,13 +559,32 @@ class _IntroState extends State<Intro> {
           width: double.infinity,
           child: ElevatedButton(
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => const HomePage(),
-                //   ),
-                // );
-                showBottom(context, 4);
+                //register api called
+                print("Register api called");
+                // authProvider
+                //     .postUser(storageProvider.name!, storageProvider.email!,
+                //         _introController.text, storageProvider.city!)
+                //     .then((value) {
+                //   showBottom(context, 4);
+                // }).onError((error, stackTrace) {
+                //   //
+                //   ScaffoldMessenger.of(context).showSnackBar(
+                //     SnackBar(
+                //       backgroundColor: Colors.red,
+                //       content: Text(
+                //         'Error! $error',
+                //         style: mcLaren(Kcolors.white, 15),
+                //       ),
+                //     ),
+                //   );
+                // });
+                authProvider.postUser(
+                    storageProvider.name!,
+                    storageProvider.email!,
+                    _introController.text,
+                    storageProvider.city!,
+                    context);
+                // showBottom(context, 4);
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Kcolors.brandGreen),

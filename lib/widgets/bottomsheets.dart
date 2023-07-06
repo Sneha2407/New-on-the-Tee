@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:new_on_the_tee/screens/login.dart';
 import 'package:new_on_the_tee/utils/colors.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
 import 'package:new_on_the_tee/widgets/input_field.dart';
-
-import '../screens/home_page.dart';
 
 Future showBottom(BuildContext context, int index) {
   return showModalBottomSheet(
@@ -248,7 +247,11 @@ class _FavoritesState extends State<Favorites> {
             children: [
               Expanded(
                 child: RadioListTile(
-                  title: Text('Yes'),
+                  activeColor: Kcolors.brandGreen,
+                  title: Text(
+                    'Yes',
+                    style: mcLaren(Kcolors.black, 14),
+                  ),
                   value: true,
                   groupValue: selectedOption,
                   onChanged: (value) {
@@ -261,7 +264,11 @@ class _FavoritesState extends State<Favorites> {
               ),
               Expanded(
                 child: RadioListTile(
-                  title: Text('No'),
+                  activeColor: Kcolors.brandGreen,
+                  title: Text(
+                    'No',
+                    style: mcLaren(Kcolors.black, 14),
+                  ),
                   value: false,
                   groupValue: selectedOption,
                   onChanged: (value) {
@@ -334,7 +341,7 @@ class Message extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const HomePage(),
+                      builder: (context) => const LoginPage(),
                     ),
                   );
                 },
@@ -350,7 +357,6 @@ class Message extends StatelessWidget {
         ],
       ),
     );
-    ;
   }
 }
 

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_on_the_tee/screens/menu_page.dart';
+import 'package:new_on_the_tee/screens/providers/auth_provider.dart';
+import 'package:new_on_the_tee/screens/providers/dashboard_provider.dart';
 import 'package:new_on_the_tee/utils/colors.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
 import 'package:new_on_the_tee/widgets/bottomsheets.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,210 +19,266 @@ class _HomePageState extends State<HomePage> {
   int selectedIndex = -1;
   List buttonTitles = ["Email", "Home Town", "Favorites"];
 
-  // @override
-  // void initState() {
-  //   showBottom(context, 4);
-  //   super.initState();
-  // }
-
   @override
   void initState() {
-    // getData();
+    final dashProvider = Provider.of<DashboardProvider>(context, listen: false);
+    final authProvider = Provider.of<RegisterProvider>(context, listen: false);
+    dashProvider.fetchData(authProvider.accessToken!);
     super.initState();
   }
 
-  // getData() {
-  //   Future.delayed(const Duration(seconds: 1), () {
-  //     // context.goNamed(AppRoute.getStartedPage.name);
-  //     // openBottomSheet(context, Message());
-  //     showBottom(context, 4);
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Stack(
-            children: [
-              Column(
-                children: [
-                  Container(
-                    height: 200.h,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(20.r),
-                          bottomRight: Radius.circular(20.r),
-                        ),
-                        image: const DecorationImage(
-                            image: AssetImage("assets/images/welcome.png"),
-                            fit: BoxFit.cover)),
-                  ),
-                  SizedBox(
-                    height: 35.h,
-                  ),
-                ],
-              ),
-              Positioned(
-                  bottom: 0,
-                  left: 15.w,
-                  right: 15.w,
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      hintText: "Search Name......",
-                      hintStyle: mcLaren(Kcolors.grey400, 12),
-                      prefixIcon: IconButton(
-                        icon: Image.asset(
-                          "assets/icons/search.png",
-                          height: 25,
-                          width: 25,
-                        ),
-                        onPressed: () {},
-                      ),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
+    final dashProvider = Provider.of<DashboardProvider>(context);
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            Stack(
+              children: [
+                Column(
+                  children: [
+                    Container(
+                      height: 200.h,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(20.r),
+                            bottomRight: Radius.circular(20.r),
+                          ),
+                          image: const DecorationImage(
+                              image: AssetImage("assets/images/welcome.png"),
+                              fit: BoxFit.cover)),
                     ),
-                  )),
-              Positioned(
-                  top: 30.h,
-                  left: 15.w,
-                  right: 15.w,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Welcome to \nNow on The Tee",
-                        style: mcLaren(Kcolors.white, 24)
-                            .copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      Container(
-                          height: 30.h,
-                          width: 30.w,
-                          decoration: BoxDecoration(
-                            color: Kcolors.lightGreen.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(5.r),
+                    SizedBox(
+                      height: 35.h,
+                    ),
+                  ],
+                ),
+                Positioned(
+                    bottom: 0,
+                    left: 15.w,
+                    right: 15.w,
+                    child: TextFormField(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white,
+                        hintText: "Search Name......",
+                        hintStyle: mcLaren(Kcolors.grey400, 12),
+                        prefixIcon: IconButton(
+                          icon: Image.asset(
+                            "assets/icons/search.png",
+                            height: 25,
+                            width: 25,
                           ),
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MenuPage(),
-                                ),
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(5.0),
-                              child: Image.asset("assets/icons/menu.png"),
-                            ),
-                          ))
-                    ],
-                  ))
-            ],
-          ),
-          SizedBox(
-            height: 20.h,
-          ),
-          SizedBox(
-            height: 40.h,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: 3,
-                shrinkWrap: true,
-                itemBuilder: (BuildContext context, int index) {
-                  return RoundedButton(
-                    text: buttonTitles[index],
-                    isSelected: index == selectedIndex,
-                    onPressed: () {
-                      setState(() {
-                        selectedIndex = index;
-                        //show respective bottomsheets
-                        showBottom(context, index + 1);
-                      });
-                    },
-                  );
-                }),
-          ),
-          // SizedBox(
-          //   height: 20.h,
-          // ),
-          Flexible(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-              child: ListView.builder(
-                // shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                physics: AlwaysScrollableScrollPhysics(),
-                itemCount: 10, // Assuming you have only one item in the list
-                itemBuilder: (BuildContext context, int index) {
-                  return Column(
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            height: 45.h,
-                            width: 45.w,
+                          onPressed: () {},
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                      ),
+                    )),
+                Positioned(
+                    top: 30.h,
+                    left: 15.w,
+                    right: 15.w,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Welcome to \nNow on The Tee",
+                          style: mcLaren(Kcolors.white, 24)
+                              .copyWith(fontWeight: FontWeight.w600),
+                        ),
+                        Container(
+                            height: 30.h,
+                            width: 30.w,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              image: const DecorationImage(
-                                image: NetworkImage(
-                                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsynwv-5qtogtOwJbIjaPFJUmHpzhxgqIAug&usqp=CAU",
-                                ),
+                              color: Kcolors.lightGreen.withOpacity(0.6),
+                              borderRadius: BorderRadius.circular(5.r),
+                            ),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        MenuPage(),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      const begin = Offset(1.0, 0.0);
+                                      const end = Offset.zero;
+                                      final tween =
+                                          Tween(begin: begin, end: end);
+                                      final offsetAnimation =
+                                          animation.drive(tween);
+
+                                      return SlideTransition(
+                                        position: offsetAnimation,
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Image.asset("assets/icons/menu.png"),
                               ),
-                            ),
-                          ),
-                          SizedBox(width: 10.w),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Guy Hawkins",
-                                  style: montserrat(Kcolors.black, 14)
-                                      .copyWith(fontWeight: FontWeight.w600),
-                                ),
-                                SizedBox(height: 5.h),
-                                Text(
-                                  "kenzi.lawson@example.com | pembroke pines",
-                                  style: montserrat(Kcolors.grey400, 10),
-                                ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Image.asset(
-                              "assets/icons/heart.png",
-                              height: 20.h,
-                              width: 20.w,
-                              color: Kcolors.brandGreen,
-                            ),
-                          ),
-                        ],
+                            ))
+                      ],
+                    ))
+              ],
+            ),
+            SizedBox(
+              height: 20.h,
+            ),
+            SizedBox(
+              height: 40.h,
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: 3,
+                  shrinkWrap: true,
+                  itemBuilder: (BuildContext context, int index) {
+                    return RoundedButton(
+                      text: buttonTitles[index],
+                      isSelected: index == selectedIndex,
+                      onPressed: () {
+                        setState(() {
+                          selectedIndex = index;
+                          //show respective bottomsheets
+                          showBottom(context, index + 1);
+                        });
+                      },
+                    );
+                  }),
+            ),
+            // SizedBox(
+            //   height: 20.h,
+            // ),
+            Flexible(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
+                child: dashProvider.dashboard!.isEmpty
+                    ? Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        // shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemCount: dashProvider.dashboard!
+                            .length, // Assuming you have only one item in the list
+                        itemBuilder: (BuildContext context, int index) {
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    height: 45.h,
+                                    width: 45.w,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(5),
+                                      image: const DecorationImage(
+                                        image: NetworkImage(
+                                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsynwv-5qtogtOwJbIjaPFJUmHpzhxgqIAug&usqp=CAU",
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10.w),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${dashProvider.dashboard![index].name}",
+                                          style: montserrat(Kcolors.black, 14)
+                                              .copyWith(
+                                                  fontWeight: FontWeight.w600),
+                                        ),
+                                        SizedBox(height: 5.h),
+                                        Text(
+                                          "${dashProvider.dashboard![index].email} | ${dashProvider.dashboard![index].city}",
+                                          style:
+                                              montserrat(Kcolors.grey400, 10),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      print(
+                                          "favourite ${dashProvider.dashboard![index].favourite}");
+                                      final authProvider =
+                                          Provider.of<RegisterProvider>(context,
+                                              listen: false);
+                                      dashProvider
+                                          .updateFavourite(
+                                              authProvider.accessToken!,
+                                              dashProvider.dashboard![index].id)
+                                          .then((value) {
+                                        setState(() {
+                                          dashProvider.dashboard![index]
+                                                      .favourite ==
+                                                  0
+                                              ? dashProvider.dashboard![index]
+                                                  .favourite = 1
+                                              : dashProvider.dashboard![index]
+                                                  .favourite = 0;
+                                        });
+                                      }).onError((error, stackTrace) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content: Text(
+                                              'Error! Failed to update Favourite',
+                                              style: mcLaren(Kcolors.white, 15),
+                                            ),
+                                          ),
+                                        );
+                                      });
+                                    },
+                                    icon: dashProvider
+                                                .dashboard![index].favourite ==
+                                            0
+                                        ? Icon(
+                                            Icons.favorite_border,
+                                            color: Kcolors.grey400,
+                                            size: 20.sp,
+                                          )
+                                        : Icon(
+                                            Icons.favorite,
+                                            color: Kcolors.brandGreen,
+                                            size: 20.sp,
+                                          ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 5.h),
+                            ],
+                          );
+                        },
                       ),
-                      SizedBox(height: 5.h),
-                    ],
-                  );
-                },
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
