@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:new_on_the_tee/screens/login.dart';
+import 'package:new_on_the_tee/screens/login_page.dart';
 import 'package:new_on_the_tee/utils/colors.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
 import 'package:new_on_the_tee/widgets/input_field.dart';
@@ -41,6 +41,8 @@ Widget getView(int index) {
       return const Message();
     case 5:
       return const ChangePassword();
+    case 6:
+      return const DeleteAnnoucement();
     default:
       return const EmailSelection();
   }
@@ -114,7 +116,7 @@ class _EmailSelectionState extends State<EmailSelection> {
                   // Navigator.push(
                   //   context,
                   //   MaterialPageRoute(
-                  //     builder: (context) => LoginSignup(),
+                  //     builder: (context) => RegisterPage(),
                   //   ),
                   // );
                 },
@@ -547,6 +549,49 @@ class _ChangePasswordState extends State<ChangePassword> {
                 )),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class DeleteAnnoucement extends StatelessWidget {
+  const DeleteAnnoucement({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 20.h),
+        child: SizedBox(
+          height: 40.h,
+          width: double.infinity,
+          child: ElevatedButton(
+              onPressed: () {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => const RegisterPage(),
+                //   ),
+                // );
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Kcolors.redLogout),
+                elevation: MaterialStateProperty.all(0),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.r),
+                    // side:  BorderSide(color: Kcolors.grey300),
+                  ),
+                ),
+              ),
+              child: Text(
+                "Delete Selected One",
+                style: mcLaren(Kcolors.white, 15),
+              )),
+        ),
       ),
     );
   }

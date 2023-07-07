@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:new_on_the_tee/screens/providers/auth_provider.dart';
-import 'package:new_on_the_tee/screens/providers/storage_provider.dart';
-import 'package:provider/provider.dart';
+// import 'package:new_on_the_tee/screens/providers/auth_provider.dart';
+// import 'package:new_on_the_tee/screens/providers/storage_provider.dart';
+// import 'package:provider/provider.dart';
 import '../models.dart/dashboard_model.dart';
 
 class DashboardProvider with ChangeNotifier {
@@ -26,14 +26,14 @@ class DashboardProvider with ChangeNotifier {
       headers: {'Authorization': 'Bearer $accessToken'},
     );
 
-    if (response.statusCode == 200) {
-      final jsonResponse = json.decode(response.body);
-      final dashboardResponse = DashboardResponse.fromJson(jsonResponse);
+    final jsonResponse = json.decode(response.body);
+    final dashboardResponse = DashboardResponse.fromJson(jsonResponse);
+    if (dashboardResponse.code == 200) {
       print('Message: ${dashboardResponse.message}');
       print('Success: ${dashboardResponse.success}');
       print('Code: ${dashboardResponse.code}');
       print('Data: ${dashboardResponse.data}');
-      setDashboard(dashboardResponse.data ?? []);
+      setDashboard(dashboardResponse.data);
     } else {
       throw Exception('Failed to fetch data');
     }
@@ -49,9 +49,9 @@ class DashboardProvider with ChangeNotifier {
       body: {'id': id.toString()},
     );
 
-    if (response.statusCode == 200) {
-      final jsonResponse = json.decode(response.body);
-      final favResponse = FavResponse.fromJson(jsonResponse);
+    final jsonResponse = json.decode(response.body);
+    final favResponse = FavResponse.fromJson(jsonResponse);
+    if (favResponse.code == 200) {
       print('Message: ${favResponse.message}');
       print('Success: ${favResponse.success}');
       print('Code: ${favResponse.code}');

@@ -10,17 +10,6 @@ class IntroPage extends StatefulWidget {
 }
 
 class _IntroPageState extends State<IntroPage> {
-  bool intro = false;
-  bool signup = true;
-  bool login = false;
-  // bool intro = false;
-  openLoginSection() {
-    setState(() {
-      signup = false;
-      login = true;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,18 +46,11 @@ class _IntroPageState extends State<IntroPage> {
                 child: Padding(
                   padding:
                       EdgeInsets.symmetric(vertical: 20.h, horizontal: 15.w),
-                  child: Column(
+                  child: const Column(
                     children: [
-                      // ElevatedButton(
-                      //     onPressed: openLoginSection,
-                      //     child: Text("Open login")),
-                      Visibility(
-                          visible: signup,
-                          child: Intro(
-                              // loginPressed: openLoginSection,
-                              )),
-                      Visibility(visible: login, child: Login()),
-                      Visibility(visible: intro, child: Intro()),
+                      Intro(
+                          // loginPressed: openLoginSection,
+                          ),
                     ],
                   ),
                 )),

@@ -53,7 +53,7 @@ class RegisterProvider extends ChangeNotifier {
       print('Success: ${registerResponse.success}');
       print('Code: ${registerResponse.code}');
 
-      setMessage(registerResponse.message ?? "");
+      setMessage(registerResponse.message);
       showBottom(context, 4);
     } else if (registerResponse.code == 400) {
       // print('Request failed with status: ${response.statusCode}');
