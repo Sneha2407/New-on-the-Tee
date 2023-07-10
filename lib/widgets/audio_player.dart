@@ -43,76 +43,91 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
     return Container(
       // height: 70.h,
       width: double.infinity,
-      color: Color(0xff133D20),
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 15.h),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10.r),
-                  image: DecorationImage(
-                    image: NetworkImage(
-                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsynwv-5qtogtOwJbIjaPFJUmHpzhxgqIAug&usqp=CAU"),
-                    fit: BoxFit.cover,
+
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10.r),
+        color: Color(0xff133D20),
+      ),
+      // padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 15.h),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          // vertical: 10.h,
+          horizontal: 12.w,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            SizedBox(
+              height: 10.h,
+            ),
+            Row(
+              children: [
+                Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10.r),
+                    image: const DecorationImage(
+                      image: NetworkImage(
+                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsynwv-5qtogtOwJbIjaPFJUmHpzhxgqIAug&usqp=CAU"),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Guy Sebastian", style: mcLaren(Kcolors.white, 14)),
-                  SizedBox(
-                    height: 5.h,
-                  ),
-                  Text("kenzi.lawson@example.com",
-                      style: mcLaren(Kcolors.grey400, 10)),
-                ],
-              ),
-              const Spacer(),
-              Icon(
-                Icons.favorite_border_rounded,
-                color: Kcolors.white,
-                size: 20.sp,
-              ),
-              SizedBox(
-                width: 10.w,
-              ),
-              Controls(
-                audioPlayer: _audioPlayer,
-              )
-            ],
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          StreamBuilder<PositionData>(
-            stream: positionDataStream,
-            builder: (context, snapshot) {
-              final positionData = snapshot.data;
-              return
-                  // Text(
-                  //   positionData != null
-                  //       ? '${positionData.position.inMinutes}:${(positionData.position.inSeconds % 60).toString().padLeft(2, '0')}'
-                  //       : '',
-                  //   style: mcLaren(Kcolors.white, 12),
-                  // );
-                  ProgressBar(
-                progressBarColor: Kcolors.lightGreen,
-                progress: positionData?.position ?? Duration.zero,
-                buffered: positionData?.bufferedPosition ?? Duration.zero,
-                total: positionData?.duration ?? Duration.zero,
-              );
-            },
-          ),
-        ],
+                SizedBox(
+                  width: 10.w,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Guy Sebastian", style: mcLaren(Kcolors.white, 14)),
+                    SizedBox(
+                      height: 5.h,
+                    ),
+                    Text("kenzi.lawson@example.com",
+                        style: mcLaren(Kcolors.grey400, 10)),
+                  ],
+                ),
+                const Spacer(),
+                Icon(
+                  Icons.favorite_border_rounded,
+                  color: Kcolors.white,
+                  size: 20.sp,
+                ),
+                SizedBox(
+                  width: 10.w,
+                ),
+                Controls(
+                  audioPlayer: _audioPlayer,
+                )
+              ],
+            ),
+            SizedBox(
+              height: 5.h,
+            ),
+            StreamBuilder<PositionData>(
+              stream: positionDataStream,
+              builder: (context, snapshot) {
+                final positionData = snapshot.data;
+                return
+                    // Text(
+                    //   positionData != null
+                    //       ? '${positionData.position.inMinutes}:${(positionData.position.inSeconds % 60).toString().padLeft(2, '0')}'
+                    //       : '',
+                    //   style: mcLaren(Kcolors.white, 12),
+                    // );
+                    ProgressBar(
+                  progressBarColor: Kcolors.lightGreen,
+                  progress: positionData?.position ?? Duration.zero,
+                  buffered: positionData?.bufferedPosition ?? Duration.zero,
+                  total: positionData?.duration ?? Duration.zero,
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -156,4 +171,52 @@ class PositionData {
   final Duration position;
   final Duration bufferedPosition;
   final Duration duration;
+}
+
+class CustomProgressBar extends StatelessWidget {
+  final Color progressBarColor;
+  final Duration progress;
+  final Duration buffered;
+  final Duration total;
+
+  const CustomProgressBar({
+    required this.progressBarColor,
+    required this.progress,
+    required this.buffered,
+    required this.total,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double maxWidth = constraints.maxWidth;
+
+        final double progressWidth =
+            maxWidth * (progress.inMilliseconds / total.inMilliseconds);
+        final double bufferedWidth =
+            maxWidth * (buffered.inMilliseconds / total.inMilliseconds);
+
+        return Stack(
+          children: [
+            Container(
+              height: 5.0,
+              width: maxWidth,
+              color: Colors.grey.withOpacity(0.5),
+            ),
+            Container(
+              height: 5.0,
+              width: bufferedWidth,
+              color: Colors.grey.withOpacity(0.7),
+            ),
+            Container(
+              height: 5.0,
+              width: progressWidth,
+              color: progressBarColor,
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

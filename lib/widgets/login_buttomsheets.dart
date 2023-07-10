@@ -84,6 +84,7 @@ class Intro extends StatefulWidget {
 
 class _IntroState extends State<Intro> {
   final TextEditingController _introController = TextEditingController();
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<RegisterProvider>(context, listen: false);
@@ -147,11 +148,13 @@ class _IntroState extends State<Intro> {
           height: 40.h,
           width: double.infinity,
           child: ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 //register api called
                 print("Register api called");
-
-                authProvider
+                setState(() {
+                  isLoading = true;
+                });
+                await authProvider
                     .postUser(storageProvider.name!, storageProvider.email!,
                         _introController.text, storageProvider.city!, context)
                     .onError((error, stackTrace) =>
@@ -164,6 +167,9 @@ class _IntroState extends State<Intro> {
                             ),
                           ),
                         ));
+                setState(() {
+                  isLoading = false;
+                });
                 // showBottom(context, 4);
               },
               style: ButtonStyle(
@@ -176,10 +182,20 @@ class _IntroState extends State<Intro> {
                   ),
                 ),
               ),
-              child: Text(
-                "Hear Your Intro",
-                style: mcLaren(Kcolors.white, 15),
-              )),
+              child: isLoading
+                  ? Padding(
+                      padding: EdgeInsets.all(5.h),
+                      child: const CircularProgressIndicator(
+                        // Show loading indicator
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.white,
+                        ),
+                      ),
+                    )
+                  : Text(
+                      "Hear Your Intro",
+                      style: mcLaren(Kcolors.white, 15),
+                    )),
         ),
       ],
     );

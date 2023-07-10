@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -20,6 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
   openLoginSection() {
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
       return const LoginPage();
@@ -74,215 +76,242 @@ class _RegisterPageState extends State<RegisterPage> {
                           padding: EdgeInsets.only(
                             bottom: MediaQuery.of(context).viewInsets.bottom,
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                height: 10.h,
-                              ),
-                              Align(
+                          child: Form(
+                            key: formKey,
+                            autovalidateMode: AutovalidateMode.disabled,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                Align(
+                                    alignment: Alignment.center,
+                                    child: Text('Start Today’s Round',
+                                        style: regularBrush())),
+                                Align(
                                   alignment: Alignment.center,
-                                  child: Text('Start Today’s Round',
-                                      style: regularBrush())),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "You are up next are you ready....",
+                                  child: Text(
+                                    "You are up next are you ready....",
+                                    style: GoogleFonts.mcLaren(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 12.sp,
+                                      color: Kcolors.white,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20.h,
+                                ),
+                                Text(
+                                  "Enter Your Name",
                                   style: GoogleFonts.mcLaren(
                                     fontWeight: FontWeight.w400,
-                                    fontSize: 12.sp,
-                                    color: Kcolors.white,
+                                    fontSize: 14.sp,
+                                    color: Kcolors.grey300,
                                   ),
                                 ),
-                              ),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              Text(
-                                "Enter Your Name",
-                                style: GoogleFonts.mcLaren(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14.sp,
-                                  color: Kcolors.grey300,
+                                SizedBox(
+                                  height: 5.h,
                                 ),
-                              ),
-                              SizedBox(
-                                height: 5.h,
-                              ),
-                              TextFormField(
-                                //change text color
-                                style: mcLaren(Kcolors.white, 14),
-                                controller: _nameController,
-                                decoration: InputDecoration(
-                                  hintText: "Name",
-                                  hintStyle: mcLaren(Kcolors.grey400, 14),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    borderSide: const BorderSide(
-                                        color: Kcolors.grey300, width: 1),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    borderSide: const BorderSide(
-                                        color: Kcolors.grey400, width: 1),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10.h,
-                              ),
-                              Text(
-                                "Enter Your Home Town",
-                                style: GoogleFonts.mcLaren(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14.sp,
-                                  color: Kcolors.grey300,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 5.h,
-                              ),
-                              TextFormField(
-                                style: mcLaren(Kcolors.white, 14),
-                                controller: _cityController,
-                                decoration: InputDecoration(
-                                  hintText: "Kolkata",
-                                  hintStyle: mcLaren(Kcolors.grey400, 14),
-                                  suffixIcon: IconButton(
-                                    icon: Image.asset(
-                                      "assets/icons/location.png",
-                                      height: 25.h,
-                                      width: 25.w,
+                                TextFormField(
+                                  //change text color
+                                  style: mcLaren(Kcolors.white, 14),
+                                  controller: _nameController,
+                                  decoration: InputDecoration(
+                                    hintText: "Name",
+                                    hintStyle: mcLaren(Kcolors.grey400, 14),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.r),
+                                      borderSide: const BorderSide(
+                                          color: Kcolors.grey300, width: 1),
                                     ),
-                                    onPressed: () {},
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    borderSide: const BorderSide(
-                                        color: Kcolors.grey300, width: 1),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    borderSide: const BorderSide(
-                                        color: Kcolors.grey400, width: 1),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                height: 10.h,
-                              ),
-                              Text(
-                                "Enter Your Email",
-                                style: GoogleFonts.mcLaren(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 14.sp,
-                                  color: Kcolors.grey300,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 5.h,
-                              ),
-                              TextFormField(
-                                style: mcLaren(Kcolors.white, 14),
-                                controller: _emailController,
-                                decoration: InputDecoration(
-                                  hintText: "example@gmail.com",
-                                  hintStyle: mcLaren(Kcolors.grey400, 14),
-                                  suffixIcon: IconButton(
-                                    icon: Image.asset(
-                                      "assets/icons/email.png",
-                                      height: 25.h,
-                                      width: 25.w,
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.r),
+                                      borderSide: const BorderSide(
+                                          color: Kcolors.grey400, width: 1),
                                     ),
-                                    onPressed: () {},
                                   ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    borderSide: const BorderSide(
-                                        color: Kcolors.grey300, width: 1),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.r),
-                                    borderSide: const BorderSide(
-                                        color: Kcolors.grey400, width: 1),
+                                  validator: (value) {
+                                    if (value != null && value.length < 3) {
+                                      return "Name must be of minumum 3 characters";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                Text(
+                                  "Enter Your Home Town",
+                                  style: GoogleFonts.mcLaren(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14.sp,
+                                    color: Kcolors.grey300,
                                   ),
                                 ),
-                              ),
-                              SizedBox(
-                                height: 20.h,
-                              ),
-                              //green button
-                              SizedBox(
-                                height: 40.h,
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                    onPressed: () {
-                                      //
-                                      print("Signup pressed");
-
-                                      storeProvider
-                                          .setName(_nameController.text);
-                                      storeProvider
-                                          .setEmail(_emailController.text);
-                                      storeProvider
-                                          .setCity(_cityController.text);
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const IntroPage(),
-                                        ),
-                                      );
-                                    },
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(
-                                              Kcolors.brandGreen),
-                                      elevation: MaterialStateProperty.all(0),
-                                      shape: MaterialStateProperty.all(
-                                        RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.r),
-                                          // side:  BorderSide(color: Kcolors.grey300),
+                                SizedBox(
+                                  height: 5.h,
+                                ),
+                                TextFormField(
+                                  style: mcLaren(Kcolors.white, 14),
+                                  controller: _cityController,
+                                  decoration: InputDecoration(
+                                    hintText: "Kolkata",
+                                    hintStyle: mcLaren(Kcolors.grey400, 14),
+                                    suffixIcon: IconButton(
+                                      icon: Image.asset(
+                                        "assets/icons/location.png",
+                                        height: 25.h,
+                                        width: 25.w,
+                                      ),
+                                      onPressed: () {},
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.r),
+                                      borderSide: const BorderSide(
+                                          color: Kcolors.grey300, width: 1),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.r),
+                                      borderSide: const BorderSide(
+                                          color: Kcolors.grey400, width: 1),
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value != null && value.length < 3) {
+                                      return "Hometown must be of minumum 3 characters";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                Text(
+                                  "Enter Your Email",
+                                  style: GoogleFonts.mcLaren(
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: 14.sp,
+                                    color: Kcolors.grey300,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5.h,
+                                ),
+                                TextFormField(
+                                  style: mcLaren(Kcolors.white, 14),
+                                  controller: _emailController,
+                                  decoration: InputDecoration(
+                                    hintText: "example@gmail.com",
+                                    hintStyle: mcLaren(Kcolors.grey400, 14),
+                                    suffixIcon: IconButton(
+                                      icon: Image.asset(
+                                        "assets/icons/email.png",
+                                        height: 25.h,
+                                        width: 25.w,
+                                      ),
+                                      onPressed: () {},
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.r),
+                                      borderSide: const BorderSide(
+                                          color: Kcolors.grey300, width: 1),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.r),
+                                      borderSide: const BorderSide(
+                                          color: Kcolors.grey400, width: 1),
+                                    ),
+                                  ),
+                                  validator: (email) {
+                                    if (email != null &&
+                                        !EmailValidator.validate(email)) {
+                                      return "Enter Valid Email";
+                                    } else {
+                                      return null;
+                                    }
+                                  },
+                                ),
+                                SizedBox(
+                                  height: 20.h,
+                                ),
+                                //green button
+                                SizedBox(
+                                  height: 40.h,
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                      onPressed: () {
+                                        //
+                                        print("Signup pressed");
+                                        if (formKey.currentState!.validate()) {
+                                          storeProvider
+                                              .setName(_nameController.text);
+                                          storeProvider
+                                              .setEmail(_emailController.text);
+                                          storeProvider
+                                              .setCity(_cityController.text);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const IntroPage(),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                                Kcolors.brandGreen),
+                                        elevation: MaterialStateProperty.all(0),
+                                        shape: MaterialStateProperty.all(
+                                          RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.r),
+                                            // side:  BorderSide(color: Kcolors.grey300),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    child: Text(
-                                      "Sign Up",
-                                      style: mcLaren(Kcolors.white, 15),
-                                    )),
-                              ),
+                                      child: Text(
+                                        "Sign Up",
+                                        style: mcLaren(Kcolors.white, 15),
+                                      )),
+                                ),
 
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Already have an account?",
-                                    style: mcLaren(Kcolors.white, 12),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      openLoginSection();
-                                      //add login route>>>>>>
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              const LoginPage(),
-                                        ),
-                                      );
-                                    },
-                                    child: Text(
-                                      "Log In",
-                                      style: mcLaren(Kcolors.brandGreen, 12)
-                                          .copyWith(
-                                              fontWeight: FontWeight.w600),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Already have an account?",
+                                      style: mcLaren(Kcolors.white, 12),
                                     ),
-                                  ),
-                                ],
-                              )
-                            ],
+                                    TextButton(
+                                      onPressed: () {
+                                        openLoginSection();
+                                        //add login route>>>>>>
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const LoginPage(),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        "Log In",
+                                        style: mcLaren(Kcolors.brandGreen, 12)
+                                            .copyWith(
+                                                fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
                         )
 
