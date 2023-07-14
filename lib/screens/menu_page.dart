@@ -5,8 +5,6 @@ import 'package:new_on_the_tee/utils/colors.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
 import 'package:new_on_the_tee/widgets/bottomsheets.dart';
 
-import '../widgets/audio_player.dart';
-
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
 
