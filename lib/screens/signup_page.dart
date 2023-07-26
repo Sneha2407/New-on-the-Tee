@@ -36,8 +36,9 @@ class _RegisterPageState extends State<RegisterPage> {
         return false;
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         body: Container(
-          height: double.infinity,
+          // height: double.infinity,
           width: double.infinity,
           decoration: const BoxDecoration(
             image: DecorationImage(
