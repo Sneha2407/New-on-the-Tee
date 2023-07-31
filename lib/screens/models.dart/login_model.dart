@@ -71,3 +71,34 @@ class LoginErrorResponse {
         "code": code,
       };
 }
+
+ChangePasswordResponse changePasswordResponseFromJson(String str) =>
+    ChangePasswordResponse.fromJson(json.decode(str));
+
+String changePasswordResponseToJson(ChangePasswordResponse data) =>
+    json.encode(data.toJson());
+
+class ChangePasswordResponse {
+  String message;
+  bool success;
+  int code;
+
+  ChangePasswordResponse({
+    required this.message,
+    required this.success,
+    required this.code,
+  });
+
+  factory ChangePasswordResponse.fromJson(Map<String, dynamic> json) =>
+      ChangePasswordResponse(
+        message: json["message"],
+        success: json["success"],
+        code: json["code"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "message": message,
+        "success": success,
+        "code": code,
+      };
+}

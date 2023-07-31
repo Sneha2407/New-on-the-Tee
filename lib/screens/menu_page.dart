@@ -64,26 +64,31 @@ class _MenuPageState extends State<MenuPage> {
                 ),
               ),
             ),
-            ListTile(
-              leading: Container(
-                  height: 30.h,
-                  width: 30.w,
-                  decoration: const BoxDecoration(
-                    color: Kcolors.brandGreen,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Image.asset("assets/icons/annoucements.png"),
-                  )),
-              title: Text(
-                "Annoucements",
-                style: mcLaren(Kcolors.black, 16),
-              ),
-              trailing: const Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: Kcolors.grey400,
-                size: 20,
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: ListTile(
+                leading: Container(
+                    height: 30.h,
+                    width: 30.w,
+                    decoration: const BoxDecoration(
+                      color: Kcolors.brandGreen,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Image.asset("assets/icons/annoucements.png"),
+                    )),
+                title: Text(
+                  "Annoucements",
+                  style: mcLaren(Kcolors.black, 16),
+                ),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Kcolors.grey400,
+                  size: 20,
+                ),
               ),
             ),
             GestureDetector(

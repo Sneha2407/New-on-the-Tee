@@ -62,7 +62,7 @@ class Datum {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
+        "id": id.toInt(),
         "name": name,
         "email": email,
         "url": url,
@@ -97,5 +97,55 @@ class FavResponse {
         "message": message,
         "success": success,
         "code": code,
+      };
+}
+
+DeleteResponse deleteResponseFromJson(String str) =>
+    DeleteResponse.fromJson(json.decode(str));
+
+String deleteResponseToJson(DeleteResponse data) => json.encode(data.toJson());
+
+class DeleteResponse {
+  String message;
+  bool success;
+  int code;
+
+  DeleteResponse({
+    required this.message,
+    required this.success,
+    required this.code,
+  });
+
+  factory DeleteResponse.fromJson(Map<String, dynamic> json) => DeleteResponse(
+        message: json["message"],
+        success: json["success"],
+        code: json["code"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "message": message,
+        "success": success,
+        "code": code,
+      };
+}
+
+DeleteRequest deleteRequestFromJson(String str) =>
+    DeleteRequest.fromJson(json.decode(str));
+
+String deleteRequestToJson(DeleteRequest data) => json.encode(data.toJson());
+
+class DeleteRequest {
+  List<String> id;
+
+  DeleteRequest({
+    required this.id,
+  });
+
+  factory DeleteRequest.fromJson(Map<String, dynamic> json) => DeleteRequest(
+        id: List<String>.from(json["id"].map((x) => x)),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": List<dynamic>.from(id.map((x) => x)),
       };
 }

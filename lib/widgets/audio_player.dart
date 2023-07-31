@@ -2,12 +2,18 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:new_on_the_tee/screens/providers/auth_provider.dart';
 import 'package:new_on_the_tee/utils/colors.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../screens/providers/dashboard_provider.dart';
+
 class AudioPlayerWidget extends StatefulWidget {
-  const AudioPlayerWidget({super.key});
+  final String url;
+  final int index;
+  const AudioPlayerWidget({super.key, required this.url, required this.index});
 
   @override
   State<AudioPlayerWidget> createState() => _AudioPlayerWidgetState();
@@ -27,8 +33,8 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
 
   @override
   void initState() {
-    _audioPlayer = AudioPlayer()
-      ..setUrl('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
+    _audioPlayer = AudioPlayer()..setUrl(widget.url);
+    _audioPlayer.play(); // Start playing the audio on initialization
     super.initState();
   }
 
@@ -40,13 +46,15 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final dashProvider = Provider.of<DashboardProvider>(context);
+    final authProvider = Provider.of<RegisterProvider>(context);
     return Container(
       // height: 70.h,
       width: double.infinity,
 
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10.r),
-        color: Color(0xff133D20),
+        color: const Color(0xff133D20),
       ),
       // padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 15.h),
       child: Padding(
@@ -82,19 +90,54 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Guy Sebastian", style: mcLaren(Kcolors.white, 14)),
+                    Text(dashProvider.dashboard!.data[widget.index].name ?? "",
+                        style: mcLaren(Kcolors.white, 14)),
                     SizedBox(
-                      height: 5.h,
+                      height: 2.h,
                     ),
-                    Text("kenzi.lawson@example.com",
+                    Text(dashProvider.dashboard!.data[widget.index].email ?? "",
                         style: mcLaren(Kcolors.grey400, 10)),
                   ],
                 ),
                 const Spacer(),
-                Icon(
-                  Icons.favorite_border_rounded,
-                  color: Kcolors.white,
-                  size: 20.sp,
+                IconButton(
+                  icon:
+                      dashProvider.dashboard!.data[widget.index].favourite == 0
+                          ? Icon(
+                              Icons.favorite_border_rounded,
+                              color: Kcolors.white,
+                              size: 20.sp,
+                            )
+                          : Icon(
+                              Icons.favorite_rounded,
+                              color: Kcolors.white,
+                              size: 20.sp,
+                            ),
+                  onPressed: () {
+                    dashProvider
+                        .updateFavourite(authProvider.accessToken!,
+                            dashProvider.dashboard!.data[widget.index].id)
+                        .then((value) {
+                      setState(() {
+                        dashProvider.dashboard!.data[widget.index].favourite ==
+                                0
+                            ? dashProvider
+                                .dashboard!.data[widget.index].favourite = 1
+                            : dashProvider
+                                .dashboard!.data[widget.index].favourite = 0;
+                      });
+                    }).onError((error, stackTrace) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.red.withOpacity(0.5),
+                          content: Text(
+                            'Error! Failed to update Favourite',
+                            style: mcLaren(Kcolors.white, 15),
+                          ),
+                        ),
+                      );
+                    });
+                  },
                 ),
                 SizedBox(
                   width: 10.w,
@@ -119,6 +162,8 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                     //   style: mcLaren(Kcolors.white, 12),
                     // );
                     ProgressBar(
+                  thumbRadius: 0.r,
+                  timeLabelLocation: TimeLabelLocation.none,
                   progressBarColor: Kcolors.lightGreen,
                   progress: positionData?.position ?? Duration.zero,
                   buffered: positionData?.bufferedPosition ?? Duration.zero,
@@ -133,13 +178,20 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
   }
 }
 
-class Controls extends StatelessWidget {
+class Controls extends StatefulWidget {
   const Controls({super.key, required this.audioPlayer});
   final AudioPlayer audioPlayer;
+
+  @override
+  State<Controls> createState() => _ControlsState();
+}
+
+class _ControlsState extends State<Controls> {
   @override
   Widget build(BuildContext context) {
+    final dashProvider = Provider.of<DashboardProvider>(context);
     return StreamBuilder<PlayerState>(
-        stream: audioPlayer.playerStateStream,
+        stream: widget.audioPlayer.playerStateStream,
         builder: (context, snapshot) {
           final playerState = snapshot.data;
           final processingState = playerState?.processingState;
@@ -148,18 +200,29 @@ class Controls extends StatelessWidget {
             return IconButton(
               icon: const Icon(Icons.play_arrow_rounded),
               iconSize: 20.sp,
-              onPressed: audioPlayer.play,
+              color: Colors.white,
+              onPressed: widget.audioPlayer.play,
             );
           } else if (processingState != ProcessingState.completed) {
             return IconButton(
               icon: const Icon(Icons.pause_rounded),
               iconSize: 20.sp,
-              onPressed: audioPlayer.pause,
+              color: Colors.white,
+              onPressed: widget.audioPlayer.pause,
             );
           } else {
-            return Icon(
-              Icons.replay_rounded,
-              size: 20.sp,
+            return IconButton(
+              icon: Icon(
+                Icons.close_rounded,
+                size: 20.sp,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                  // stop the audio
+                  dashProvider.setPlay(false);
+                });
+              },
             );
           }
         });
@@ -171,52 +234,4 @@ class PositionData {
   final Duration position;
   final Duration bufferedPosition;
   final Duration duration;
-}
-
-class CustomProgressBar extends StatelessWidget {
-  final Color progressBarColor;
-  final Duration progress;
-  final Duration buffered;
-  final Duration total;
-
-  const CustomProgressBar({
-    required this.progressBarColor,
-    required this.progress,
-    required this.buffered,
-    required this.total,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double maxWidth = constraints.maxWidth;
-
-        final double progressWidth =
-            maxWidth * (progress.inMilliseconds / total.inMilliseconds);
-        final double bufferedWidth =
-            maxWidth * (buffered.inMilliseconds / total.inMilliseconds);
-
-        return Stack(
-          children: [
-            Container(
-              height: 5.0,
-              width: maxWidth,
-              color: Colors.grey.withOpacity(0.5),
-            ),
-            Container(
-              height: 5.0,
-              width: bufferedWidth,
-              color: Colors.grey.withOpacity(0.7),
-            ),
-            Container(
-              height: 5.0,
-              width: progressWidth,
-              color: progressBarColor,
-            ),
-          ],
-        );
-      },
-    );
-  }
 }

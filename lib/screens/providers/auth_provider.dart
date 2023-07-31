@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -112,7 +114,7 @@ class RegisterProvider extends ChangeNotifier {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => HomePage(),
+          builder: (context) => const HomePage(),
         ),
       );
     } else if (loginResponse.success == false) {
@@ -130,5 +132,32 @@ class RegisterProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  //change password
+  Future<void> changePassword(String accessToken, String oldpassword,
+      String newpassword, String confirmnew) async {
+    const url =
+        'https://fortmindz.co.in/nowOnTheTee_API/public/api/change-password';
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Authorization': 'Bearer $accessToken'},
+      body: {
+        'oldPassword': oldpassword,
+        'password': newpassword,
+        'password_confirmation': confirmnew
+      },
+    );
+
+    final jsonResponse = json.decode(response.body);
+    final changeResponse = ChangePasswordResponse.fromJson(jsonResponse);
+    if (changeResponse.code == 200) {
+      print('Message: ${changeResponse.message}');
+      print('Success: ${changeResponse.success}');
+      print('Code: ${changeResponse.code}');
+    } else {
+      throw Exception(changeResponse.message);
+    }
   }
 }

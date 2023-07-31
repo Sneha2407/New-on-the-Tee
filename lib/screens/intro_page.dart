@@ -20,41 +20,56 @@ class _IntroPageState extends State<IntroPage> {
           image: DecorationImage(
               image: AssetImage("assets/images/bg.png"), fit: BoxFit.cover),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Image.asset(
-              "assets/icons/applogo.png",
-              height: 100.h,
-              width: 100.w,
-            ),
-            SizedBox(
-              height: 30.h,
-            ),
-            Container(
-                decoration: BoxDecoration(
-                  // color: Colors.grey.withOpacity(0.5),
-                  gradient: LinearGradient(colors: [
-                    Colors.grey.withOpacity(0.5),
-                    Colors.black.withOpacity(0.5),
-                  ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20.r),
-                    topRight: Radius.circular(20.r),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.45,
+                child: Center(
+                  child: Image.asset(
+                    "assets/icons/applogo.png",
+                    height: 100.h,
+                    width: 100.w,
                   ),
                 ),
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 20.h, horizontal: 15.w),
-                  child: const Column(
-                    children: [
-                      Intro(
-                          // loginPressed: openLoginSection,
-                          ),
-                    ],
-                  ),
-                )),
-          ],
+              ),
+              // SizedBox(
+              //   height: 30.h,
+              // ),
+              Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: Container(
+                    height: MediaQuery.of(context).size.height * 0.55,
+                    decoration: BoxDecoration(
+                      // color: Colors.grey.withOpacity(0.5),
+                      gradient: LinearGradient(
+                          colors: [
+                            Colors.grey.withOpacity(0.5),
+                            Colors.black.withOpacity(0.5),
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20.r),
+                        topRight: Radius.circular(20.r),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: 20.h, horizontal: 15.w),
+                      child: const Column(
+                        children: [
+                          Intro(
+                              // loginPressed: openLoginSection,
+                              ),
+                        ],
+                      ),
+                    )),
+              ),
+            ],
+          ),
         ),
       ),
     );

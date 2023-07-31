@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_on_the_tee/screens/login_page.dart';
+import 'package:new_on_the_tee/screens/providers/auth_provider.dart';
+import 'package:new_on_the_tee/screens/providers/dashboard_provider.dart';
 import 'package:new_on_the_tee/utils/colors.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
 import 'package:new_on_the_tee/widgets/input_field.dart';
+import 'package:provider/provider.dart';
 
 Future showBottom(BuildContext context, int index) {
   return showModalBottomSheet(
@@ -56,14 +59,21 @@ class EmailSelection extends StatefulWidget {
 }
 
 class _EmailSelectionState extends State<EmailSelection> {
+  final TextEditingController _emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final dashProvider = Provider.of<DashboardProvider>(context);
+    final authProvider = Provider.of<RegisterProvider>(context);
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 20.h),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(
+            height: 20.h,
+          ),
           Text(
             "Email",
             style: mcLaren(Kcolors.black, 14),
@@ -72,6 +82,7 @@ class _EmailSelectionState extends State<EmailSelection> {
             height: 20.h,
           ),
           TextFormField(
+            controller: _emailController,
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.white,
@@ -98,11 +109,15 @@ class _EmailSelectionState extends State<EmailSelection> {
           SizedBox(
             height: 20.h,
           ),
-          SingleSelectActionChip(items: const [
-            "felicia.r@example.com",
-            "riya11.p@example.com",
-            "curtis.weaver@example.com",
-          ], onTap: (val) {}, selectedItem: ""),
+          SingleSelectActionChip(
+              items: [
+                dashProvider.dashboard!.data.first.email!,
+              ],
+              onTap: (val) {
+                _emailController.text = val!;
+                setState(() {});
+              },
+              selectedItem: ""),
           SizedBox(
             height: 20.h,
           ),
@@ -112,13 +127,8 @@ class _EmailSelectionState extends State<EmailSelection> {
             child: ElevatedButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  // openBottomSheet(context, SignUp());
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => RegisterPage(),
-                  //   ),
-                  // );
+                  dashProvider.fetchFilterData(
+                      authProvider.accessToken!, _emailController.text, "", "");
                 },
                 child: Text(
                   "Show Results",
@@ -128,6 +138,9 @@ class _EmailSelectionState extends State<EmailSelection> {
                     color: Kcolors.white,
                   ),
                 )),
+          ),
+          SizedBox(
+            height: 20.h,
           ),
         ],
       ),
@@ -143,14 +156,21 @@ class HomeTown extends StatefulWidget {
 }
 
 class _HomeTownState extends State<HomeTown> {
+  final TextEditingController _homeTownController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<RegisterProvider>(context);
+    final dashProvider = Provider.of<DashboardProvider>(context);
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 20.h),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(
+            height: 20.h,
+          ),
           Align(
             alignment: Alignment.center,
             child: Text(
@@ -162,6 +182,10 @@ class _HomeTownState extends State<HomeTown> {
             height: 20.h,
           ),
           TextFormField(
+            controller: _homeTownController,
+            // onChanged: (value) {
+            //   dashProvider.fetchData(authProvider.accessToken!, "true");
+            // },
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.white,
@@ -188,13 +212,18 @@ class _HomeTownState extends State<HomeTown> {
           SizedBox(
             height: 20.h,
           ),
-          SingleSelectActionChip(items: const [
-            "New York Office",
-            "Los Angeles",
-            "Paris",
-            "Kolkata",
-            "Sydney"
-          ], onTap: (val) {}, selectedItem: "abc"),
+          SingleSelectActionChip(
+              items: [
+                ...List.generate(
+                  dashProvider.dashboard!.data.length,
+                  (index) => dashProvider.dashboard!.data[index].city!,
+                ),
+              ],
+              onTap: (val) {
+                _homeTownController.text = val!;
+                setState(() {});
+              },
+              selectedItem: "abc"),
           SizedBox(
             height: 20.h,
           ),
@@ -202,8 +231,10 @@ class _HomeTownState extends State<HomeTown> {
             height: 40.h,
             width: double.infinity,
             child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   Navigator.pop(context);
+                  dashProvider.fetchFilterData(authProvider.accessToken!, "",
+                      "", _homeTownController.text);
                 },
                 child: Text(
                   "Show Results",
@@ -214,6 +245,9 @@ class _HomeTownState extends State<HomeTown> {
                   ),
                 )),
           ),
+          SizedBox(
+            height: 20.h,
+          )
         ],
       ),
     );
@@ -228,7 +262,7 @@ class Favorites extends StatefulWidget {
 }
 
 class _FavoritesState extends State<Favorites> {
-  bool selectedOption = true;
+  int selectedOption = -1;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -254,12 +288,18 @@ class _FavoritesState extends State<Favorites> {
                     'Yes',
                     style: mcLaren(Kcolors.black, 14),
                   ),
-                  value: true,
+                  value: 0,
                   groupValue: selectedOption,
-                  onChanged: (value) {
+                  onChanged: (value) async {
                     setState(() {
-                      selectedOption = value as bool;
+                      selectedOption = value!;
                     });
+                    final dashProvider =
+                        Provider.of<DashboardProvider>(context, listen: false);
+                    final authProvider =
+                        Provider.of<RegisterProvider>(context, listen: false);
+                    await dashProvider.fetchData(
+                        authProvider.accessToken!, "true");
                   },
                   // controlAffinity: ListTileControlAffinity.trailing,
                 ),
@@ -271,12 +311,18 @@ class _FavoritesState extends State<Favorites> {
                     'No',
                     style: mcLaren(Kcolors.black, 14),
                   ),
-                  value: false,
+                  value: 1,
                   groupValue: selectedOption,
-                  onChanged: (value) {
+                  onChanged: (value) async {
                     setState(() {
-                      selectedOption = value as bool;
+                      selectedOption = value!;
                     });
+                    final dashProvider =
+                        Provider.of<DashboardProvider>(context, listen: false);
+                    final authProvider =
+                        Provider.of<RegisterProvider>(context, listen: false);
+                    await dashProvider.fetchData(
+                        authProvider.accessToken!, "false");
                   },
                   // controlAffinity: ListTileControlAffinity.trailing,
                 ),
@@ -373,14 +419,26 @@ class _ChangePasswordState extends State<ChangePassword> {
   bool obscureText1 = false;
   bool obscureText2 = false;
   bool obscureText3 = false;
+  final formKey = GlobalKey<FormState>();
+
+  final TextEditingController _oldPasswordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<RegisterProvider>(context);
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 20.h),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          SizedBox(
+            height: 20.h,
+          ),
           Align(
             alignment: Alignment.center,
             child: Text(
@@ -402,131 +460,170 @@ class _ChangePasswordState extends State<ChangePassword> {
           SizedBox(
             height: 5.h,
           ),
-          TextFormField(
-            obscureText: obscureText1,
-            decoration: InputDecoration(
-              hintText: "password",
-              hintStyle: mcLaren(Kcolors.grey300, 14),
-              suffixIcon: IconButton(
-                icon: obscureText1
-                    ? Image.asset(
-                        "assets/icons/eye_visible.png",
-                        height: 25.h,
-                        width: 25.w,
-                      )
-                    : Image.asset(
-                        "assets/icons/eye_invisible.png",
-                        height: 25.h,
-                        width: 25.w,
-                      ),
-                onPressed: () {
-                  setState(() {
-                    obscureText1 = !obscureText1;
-                  });
-                },
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.r),
-                borderSide: const BorderSide(color: Kcolors.grey400, width: 1),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.r),
-                borderSide: const BorderSide(color: Kcolors.grey300, width: 1),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 20.h,
-          ),
-          Text(
-            "New Password",
-            style: GoogleFonts.mcLaren(
-              fontWeight: FontWeight.w400,
-              fontSize: 14.sp,
-              color: Kcolors.grey400,
-            ),
-          ),
-          SizedBox(
-            height: 5.h,
-          ),
-          TextFormField(
-            obscureText: obscureText2,
-            decoration: InputDecoration(
-              hintText: "password",
-              hintStyle: mcLaren(Kcolors.grey300, 14),
-              suffixIcon: IconButton(
-                icon: obscureText2
-                    ? Image.asset(
-                        "assets/icons/eye_visible.png",
-                        height: 25.h,
-                        width: 25.w,
-                      )
-                    : Image.asset(
-                        "assets/icons/eye_invisible.png",
-                        height: 25.h,
-                        width: 25.w,
-                      ),
-                onPressed: () {
-                  setState(() {
-                    obscureText2 = !obscureText2;
-                  });
-                },
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.r),
-                borderSide: const BorderSide(color: Kcolors.grey400, width: 1),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.r),
-                borderSide: const BorderSide(color: Kcolors.grey300, width: 1),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 20.h,
-          ),
-          Text(
-            "Change Password",
-            style: GoogleFonts.mcLaren(
-              fontWeight: FontWeight.w400,
-              fontSize: 14.sp,
-              color: Kcolors.grey400,
-            ),
-          ),
-          SizedBox(
-            height: 5.h,
-          ),
-          TextFormField(
-            obscureText: obscureText3,
-            decoration: InputDecoration(
-              hintText: "password",
-              hintStyle: mcLaren(Kcolors.grey300, 14),
-              suffixIcon: IconButton(
-                icon: obscureText3
-                    ? Image.asset(
-                        "assets/icons/eye_visible.png",
-                        height: 25.h,
-                        width: 25.w,
-                      )
-                    : Image.asset(
-                        "assets/icons/eye_invisible.png",
-                        height: 25.h,
-                        width: 25.w,
-                      ),
-                onPressed: () {
-                  setState(() {
-                    obscureText3 = !obscureText3;
-                  });
-                },
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.r),
-                borderSide: const BorderSide(color: Kcolors.grey400, width: 1),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.r),
-                borderSide: const BorderSide(color: Kcolors.grey300, width: 1),
-              ),
+          Form(
+            key: formKey,
+            autovalidateMode: AutovalidateMode.disabled,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                TextFormField(
+                  controller: _oldPasswordController,
+                  validator: (value) {
+                    if (value != null && value.length < 6) {
+                      return "Password must be at least 6 characters long";
+                    } else {
+                      return null;
+                    }
+                  },
+                  obscureText: obscureText1,
+                  decoration: InputDecoration(
+                    hintText: "password",
+                    hintStyle: mcLaren(Kcolors.grey300, 14),
+                    suffixIcon: IconButton(
+                      icon: obscureText1
+                          ? Image.asset(
+                              "assets/icons/eye_visible.png",
+                              height: 25.h,
+                              width: 25.w,
+                            )
+                          : Image.asset(
+                              "assets/icons/eye_invisible.png",
+                              height: 25.h,
+                              width: 25.w,
+                            ),
+                      onPressed: () {
+                        setState(() {
+                          obscureText1 = !obscureText1;
+                        });
+                      },
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                      borderSide:
+                          const BorderSide(color: Kcolors.grey400, width: 1),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                      borderSide:
+                          const BorderSide(color: Kcolors.grey300, width: 1),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Text(
+                  "New Password",
+                  style: GoogleFonts.mcLaren(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14.sp,
+                    color: Kcolors.grey400,
+                  ),
+                ),
+                SizedBox(
+                  height: 5.h,
+                ),
+                TextFormField(
+                  controller: _passwordController,
+                  validator: (value) {
+                    if (value != null && value.length < 6) {
+                      return "Password must be at least 6 characters long";
+                    } else {
+                      return null;
+                    }
+                  },
+                  obscureText: obscureText2,
+                  decoration: InputDecoration(
+                    hintText: "password",
+                    hintStyle: mcLaren(Kcolors.grey300, 14),
+                    suffixIcon: IconButton(
+                      icon: obscureText2
+                          ? Image.asset(
+                              "assets/icons/eye_visible.png",
+                              height: 25.h,
+                              width: 25.w,
+                            )
+                          : Image.asset(
+                              "assets/icons/eye_invisible.png",
+                              height: 25.h,
+                              width: 25.w,
+                            ),
+                      onPressed: () {
+                        setState(() {
+                          obscureText2 = !obscureText2;
+                        });
+                      },
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                      borderSide:
+                          const BorderSide(color: Kcolors.grey400, width: 1),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                      borderSide:
+                          const BorderSide(color: Kcolors.grey300, width: 1),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20.h,
+                ),
+                Text(
+                  "Change Password",
+                  style: GoogleFonts.mcLaren(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14.sp,
+                    color: Kcolors.grey400,
+                  ),
+                ),
+                SizedBox(
+                  height: 5.h,
+                ),
+                TextFormField(
+                  validator: (value) {
+                    if (value != null && value.length < 6) {
+                      return "Password must be at least 6 characters long";
+                    } else {
+                      return null;
+                    }
+                  },
+                  controller: _confirmPasswordController,
+                  obscureText: obscureText3,
+                  decoration: InputDecoration(
+                    hintText: "password",
+                    hintStyle: mcLaren(Kcolors.grey300, 14),
+                    suffixIcon: IconButton(
+                      icon: obscureText3
+                          ? Image.asset(
+                              "assets/icons/eye_visible.png",
+                              height: 25.h,
+                              width: 25.w,
+                            )
+                          : Image.asset(
+                              "assets/icons/eye_invisible.png",
+                              height: 25.h,
+                              width: 25.w,
+                            ),
+                      onPressed: () {
+                        setState(() {
+                          obscureText3 = !obscureText3;
+                        });
+                      },
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                      borderSide:
+                          const BorderSide(color: Kcolors.grey400, width: 1),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                      borderSide:
+                          const BorderSide(color: Kcolors.grey300, width: 1),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           SizedBox(
@@ -537,7 +634,36 @@ class _ChangePasswordState extends State<ChangePassword> {
             width: double.infinity,
             child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  if (formKey.currentState!.validate()) {
+                    authProvider
+                        .changePassword(
+                            authProvider.accessToken!,
+                            _oldPasswordController.text,
+                            _passwordController.text,
+                            _confirmPasswordController.text)
+                        .then((value) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.black.withOpacity(0.5),
+                          content: Text(
+                            "Password updated successfully!",
+                            style: mcLaren(Kcolors.white, 15),
+                          ),
+                        ),
+                      );
+                    }).onError((error, stackTrace) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          backgroundColor: Colors.red.withOpacity(0.5),
+                          content: Text(
+                            error.toString(),
+                            style: mcLaren(Kcolors.white, 15),
+                          ),
+                        ),
+                      );
+                    });
+                    Navigator.pop(context);
+                  }
                 },
                 child: Text(
                   "Change Password",
@@ -548,6 +674,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                   ),
                 )),
           ),
+          SizedBox(
+            height: 20.h,
+          )
         ],
       ),
     );
@@ -570,12 +699,7 @@ class DeleteAnnoucement extends StatelessWidget {
           width: double.infinity,
           child: ElevatedButton(
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => const RegisterPage(),
-                //   ),
-                // );
+                // Navigator.pop(context);
               },
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Kcolors.redLogout),

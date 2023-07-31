@@ -19,13 +19,25 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int selectedIndex = -1;
   List buttonTitles = ["Email", "Home Town", "Favorites"];
-  List deleteItems = [];
+  List<String> deleteItems = [];
   bool play = false;
-  @override
-  void initState() {
+  // int playIndex = 0;
+  bool isLoading = false;
+  String accessToken = "";
+  final TextEditingController _searchController = TextEditingController();
+  void getData() async {
     final dashProvider = Provider.of<DashboardProvider>(context, listen: false);
     final authProvider = Provider.of<RegisterProvider>(context, listen: false);
-    dashProvider.fetchData(authProvider.accessToken!);
+    isLoading = true;
+    await dashProvider.fetchData(authProvider.accessToken!, "");
+    accessToken = authProvider.accessToken!;
+    setState(() {});
+    isLoading = false;
+  }
+
+  @override
+  void initState() {
+    getData();
     super.initState();
   }
 
@@ -38,11 +50,38 @@ class _HomePageState extends State<HomePage> {
       },
       child: Scaffold(
         bottomSheet: deleteItems.isNotEmpty
-            ? Container(
-                height: 80.h,
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(horizontal: 15.w),
-                child: DeleteAnnoucement(),
+            ? Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 5.h),
+                child: SizedBox(
+                  height: 40.h,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      onPressed: () {
+                        // Navigator.pop(context);
+                        print(accessToken);
+
+                        dashProvider.deleteAnnoucement(
+                            deleteItems, accessToken);
+                        deleteItems.clear();
+
+                        setState(() {});
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Kcolors.redLogout),
+                        elevation: MaterialStateProperty.all(0),
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.r),
+                            // side:  BorderSide(color: Kcolors.grey300),
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        "Delete Selected One",
+                        style: mcLaren(Kcolors.white, 15),
+                      )),
+                ),
               )
             : null,
         body: Stack(
@@ -76,6 +115,17 @@ class _HomePageState extends State<HomePage> {
                         left: 15.w,
                         right: 15.w,
                         child: TextFormField(
+                          controller: _searchController,
+                          onChanged: (value) async {
+                            await dashProvider.fetchFilterData(
+                                accessToken, "", _searchController.text, "");
+                          },
+                          onTap: () async {
+                            setState(() {
+                              selectedIndex = -1;
+                            });
+                            await dashProvider.fetchData(accessToken, "");
+                          },
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: Colors.white,
@@ -170,12 +220,25 @@ class _HomePageState extends State<HomePage> {
                         return RoundedButton(
                           text: buttonTitles[index],
                           isSelected: index == selectedIndex,
-                          onPressed: () {
-                            setState(() {
+                          onPressed: () async {
+                            if (selectedIndex == index) {
+                              selectedIndex = -1;
+                              setState(() {});
+
+                              await dashProvider.fetchData(accessToken, "");
+                              return;
+                              //pass empty string to api
+                            } else if (selectedIndex != index &&
+                                selectedIndex != -1) {
+                              setState(() {});
+                              await dashProvider.fetchData(accessToken, "");
                               selectedIndex = index;
-                              //show respective bottomsheets
                               showBottom(context, index + 1);
-                            });
+                              return;
+                            }
+                            selectedIndex = index;
+                            //show respective bottomsheets
+                            showBottom(context, index + 1);
                           },
                         );
                       }),
@@ -184,43 +247,80 @@ class _HomePageState extends State<HomePage> {
                 // SizedBox(
                 //   height: 20.h,
                 // ),
-                Flexible(
-                  child: Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
-                    child: dashProvider.dashboard!.isEmpty
-                        ? Center(child: CircularProgressIndicator())
-                        : ListView.builder(
+                isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Flexible(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10.w, vertical: 5.h),
+                          child:
+                              // dashProvider.dashboard == null &&
+                              //         dashProvider.dashboard!.data.isEmpty
+                              //     ? const Center(child: CircularProgressIndicator())
+                              //     :
+                              ListView.builder(
                             // shrinkWrap: true,
-                            padding: EdgeInsets.zero,
-                            physics: AlwaysScrollableScrollPhysics(),
-                            itemCount: dashProvider.dashboard!
+                            padding: EdgeInsets.only(bottom: 50.h),
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            itemCount: dashProvider.dashboard!.data
                                 .length, // Assuming you have only one item in the list
                             itemBuilder: (BuildContext context, int index) {
-                              return GestureDetector(
+                              return InkWell(
                                 onLongPress: () {
-                                  setState(() {
-                                    deleteItems
-                                        .add(dashProvider.dashboard![index]);
-                                  });
-                                },
-                                onTap: () {
-                                  if (deleteItems.contains(
-                                      dashProvider.dashboard![index])) {
+                                  if (!dashProvider.isPlaying) {
                                     setState(() {
-                                      deleteItems.remove(
-                                          dashProvider.dashboard![index]);
+                                      deleteItems.add(dashProvider
+                                              .dashboard?.data[index].id
+                                              .toString() ??
+                                          "");
+                                    });
+                                    // dashProvider.addDeleteID(
+                                    //     dashProvider.dashboard![index].id);
+                                  }
+                                },
+                                onTap: () async {
+                                  if (deleteItems.contains(dashProvider
+                                      .dashboard!.data[index].id
+                                      .toString())) {
+                                    setState(() {
+                                      deleteItems.remove(dashProvider
+                                          .dashboard!.data[index].id
+                                          .toString());
                                       play = false;
                                     });
+                                    deleteItems.removeWhere(
+                                      (element) =>
+                                          element ==
+                                          dashProvider.dashboard!.data[index].id
+                                              .toString(),
+                                    );
                                   } else if (deleteItems.isNotEmpty) {
                                     setState(() {
-                                      deleteItems
-                                          .add(dashProvider.dashboard![index]);
+                                      deleteItems.add(dashProvider
+                                          .dashboard!.data[index].id
+                                          .toString());
                                     });
+                                    deleteItems.add(dashProvider
+                                        .dashboard!.data[index].id
+                                        .toString());
                                   } else {
-                                    setState(() {
-                                      play = true;
-                                    });
+                                    if (dashProvider.isPlaying &&
+                                        dashProvider.playIndex != index) {
+                                      dashProvider.setPlay(false);
+
+                                      setState(() {
+                                        dashProvider.setPlayIndex(index);
+                                      });
+                                      await Future.delayed(
+                                          const Duration(milliseconds: 100));
+                                      dashProvider.setPlay(true);
+                                      // dashProvider.setPlay(true);
+                                    } else {
+                                      dashProvider.setPlayIndex(index);
+                                      dashProvider.setPlay(true);
+                                    }
                                   }
                                 },
                                 child: Column(
@@ -244,7 +344,9 @@ class _HomePageState extends State<HomePage> {
                                               ),
                                             ),
                                             if (deleteItems.contains(
-                                                dashProvider.dashboard![index]))
+                                                dashProvider
+                                                    .dashboard!.data[index].id
+                                                    .toString()))
                                               Positioned(
                                                 right: 0,
                                                 bottom: 0,
@@ -270,7 +372,8 @@ class _HomePageState extends State<HomePage> {
                                                 MainAxisAlignment.start,
                                             children: [
                                               Text(
-                                                "${dashProvider.dashboard![index].name}",
+                                                dashProvider.dashboard!
+                                                    .data[index].name,
                                                 style: montserrat(
                                                         Kcolors.black, 14)
                                                     .copyWith(
@@ -279,7 +382,7 @@ class _HomePageState extends State<HomePage> {
                                               ),
                                               SizedBox(height: 5.h),
                                               Text(
-                                                "${dashProvider.dashboard![index].email} | ${dashProvider.dashboard![index].city}",
+                                                "${dashProvider.dashboard!.data[index].email} | ${dashProvider.dashboard!.data[index].city}",
                                                 style: montserrat(
                                                     Kcolors.grey400, 10),
                                               ),
@@ -289,7 +392,7 @@ class _HomePageState extends State<HomePage> {
                                         IconButton(
                                           onPressed: () {
                                             print(
-                                                "favourite ${dashProvider.dashboard![index].favourite}");
+                                                "favourite ${dashProvider.dashboard!.data[index].favourite}");
                                             final authProvider =
                                                 Provider.of<RegisterProvider>(
                                                     context,
@@ -297,18 +400,22 @@ class _HomePageState extends State<HomePage> {
                                             dashProvider
                                                 .updateFavourite(
                                                     authProvider.accessToken!,
-                                                    dashProvider
-                                                        .dashboard![index].id)
+                                                    dashProvider.dashboard!
+                                                        .data[index].id)
                                                 .then((value) {
                                               setState(() {
-                                                dashProvider.dashboard![index]
+                                                dashProvider
+                                                            .dashboard!
+                                                            .data[index]
                                                             .favourite ==
                                                         0
                                                     ? dashProvider
-                                                        .dashboard![index]
+                                                        .dashboard!
+                                                        .data[index]
                                                         .favourite = 1
                                                     : dashProvider
-                                                        .dashboard![index]
+                                                        .dashboard!
+                                                        .data[index]
                                                         .favourite = 0;
                                               });
                                             }).onError((error, stackTrace) {
@@ -326,8 +433,8 @@ class _HomePageState extends State<HomePage> {
                                               );
                                             });
                                           },
-                                          icon: dashProvider.dashboard![index]
-                                                      .favourite ==
+                                          icon: dashProvider.dashboard!
+                                                      .data[index].favourite ==
                                                   0
                                               ? Icon(
                                                   Icons.favorite_border,
@@ -348,15 +455,22 @@ class _HomePageState extends State<HomePage> {
                               );
                             },
                           ),
-                  ),
-                ),
+                        ),
+                      ),
               ],
             ),
-            Positioned(
-                child: Visibility(visible: play, child: AudioPlayerWidget()),
-                bottom: 0,
-                left: 0,
-                right: 0)
+            if (dashProvider.dashboard?.data != null && dashProvider.isPlaying)
+              Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Visibility(
+                      visible: dashProvider.isPlaying,
+                      child: AudioPlayerWidget(
+                          index: dashProvider.playIndex,
+                          url: dashProvider.dashboard
+                                  ?.data![dashProvider.playIndex].url ??
+                              "")))
           ],
         ),
       ),
