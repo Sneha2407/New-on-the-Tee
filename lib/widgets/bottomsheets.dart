@@ -655,13 +655,14 @@ class _ChangePasswordState extends State<ChangePassword> {
                         .then((value) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          backgroundColor: Colors.black.withOpacity(0.5),
+                          backgroundColor: Kcolors.brandGreen.withOpacity(0.5),
                           content: Text(
                             "Password updated successfully!",
                             style: mcLaren(Kcolors.white, 15),
                           ),
                         ),
                       );
+                      Navigator.pop(context);
                     }).onError((error, stackTrace) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
@@ -672,8 +673,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                           ),
                         ),
                       );
+                      Navigator.pop(context);
                     });
-                    Navigator.pop(context);
+                    // Navigator.pop(context);
                   }
                 },
                 child: Text(
