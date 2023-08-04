@@ -430,7 +430,7 @@ class _ChangePasswordState extends State<ChangePassword> {
   bool obscureText2 = false;
   bool obscureText3 = false;
   final formKey = GlobalKey<FormState>();
-
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
@@ -643,11 +643,12 @@ class _ChangePasswordState extends State<ChangePassword> {
             height: 40.h,
             width: double.infinity,
             child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  final SharedPreferences prefs = await _prefs;
                   if (formKey.currentState!.validate()) {
                     authProvider
                         .changePassword(
-                            authProvider.accessToken!,
+                            prefs.getString('accessToken') ?? '',
                             _oldPasswordController.text,
                             _passwordController.text,
                             _confirmPasswordController.text)
