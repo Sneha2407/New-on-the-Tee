@@ -8,6 +8,7 @@ import 'package:new_on_the_tee/utils/colors.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
 import 'package:new_on_the_tee/widgets/input_field.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future showBottom(BuildContext context, int index) {
   return showModalBottomSheet(
@@ -60,10 +61,10 @@ class EmailSelection extends StatefulWidget {
 
 class _EmailSelectionState extends State<EmailSelection> {
   final TextEditingController _emailController = TextEditingController();
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   @override
   Widget build(BuildContext context) {
     final dashProvider = Provider.of<DashboardProvider>(context);
-    final authProvider = Provider.of<RegisterProvider>(context);
     return Padding(
       padding:
           EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -125,10 +126,14 @@ class _EmailSelectionState extends State<EmailSelection> {
             height: 40.h,
             width: double.infinity,
             child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  final SharedPreferences prefs = await _prefs;
                   Navigator.pop(context);
                   dashProvider.fetchFilterData(
-                      authProvider.accessToken!, _emailController.text, "", "");
+                      prefs.getString('accessToken') ?? '',
+                      _emailController.text,
+                      "",
+                      "");
                 },
                 child: Text(
                   "Show Results",
@@ -157,9 +162,9 @@ class HomeTown extends StatefulWidget {
 
 class _HomeTownState extends State<HomeTown> {
   final TextEditingController _homeTownController = TextEditingController();
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<RegisterProvider>(context);
     final dashProvider = Provider.of<DashboardProvider>(context);
     return Padding(
       padding:
@@ -232,9 +237,13 @@ class _HomeTownState extends State<HomeTown> {
             width: double.infinity,
             child: ElevatedButton(
                 onPressed: () async {
+                  final SharedPreferences prefs = await _prefs;
                   Navigator.pop(context);
-                  dashProvider.fetchFilterData(authProvider.accessToken!, "",
-                      "", _homeTownController.text);
+                  dashProvider.fetchFilterData(
+                      prefs.getString('accessToken') ?? '',
+                      "",
+                      "",
+                      _homeTownController.text);
                 },
                 child: Text(
                   "Show Results",
@@ -262,6 +271,7 @@ class Favorites extends StatefulWidget {
 }
 
 class _FavoritesState extends State<Favorites> {
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   int selectedOption = -1;
   @override
   Widget build(BuildContext context) {
@@ -294,12 +304,12 @@ class _FavoritesState extends State<Favorites> {
                     setState(() {
                       selectedOption = value!;
                     });
+                    final SharedPreferences prefs = await _prefs;
                     final dashProvider =
                         Provider.of<DashboardProvider>(context, listen: false);
-                    final authProvider =
-                        Provider.of<RegisterProvider>(context, listen: false);
+
                     await dashProvider.fetchData(
-                        authProvider.accessToken!, "true");
+                        prefs.getString('accessToken') ?? '', "true");
                   },
                   // controlAffinity: ListTileControlAffinity.trailing,
                 ),
@@ -317,12 +327,12 @@ class _FavoritesState extends State<Favorites> {
                     setState(() {
                       selectedOption = value!;
                     });
+                    final SharedPreferences prefs = await _prefs;
                     final dashProvider =
                         Provider.of<DashboardProvider>(context, listen: false);
-                    final authProvider =
-                        Provider.of<RegisterProvider>(context, listen: false);
+
                     await dashProvider.fetchData(
-                        authProvider.accessToken!, "false");
+                        prefs.getString('accessToken') ?? '', "false");
                   },
                   // controlAffinity: ListTileControlAffinity.trailing,
                 ),

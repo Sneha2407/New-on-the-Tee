@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_on_the_tee/screens/menu_page.dart';
-import 'package:new_on_the_tee/screens/providers/auth_provider.dart';
 import 'package:new_on_the_tee/screens/providers/dashboard_provider.dart';
 import 'package:new_on_the_tee/utils/colors.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
@@ -29,11 +28,10 @@ class _HomePageState extends State<HomePage> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   void getData() async {
     final dashProvider = Provider.of<DashboardProvider>(context, listen: false);
-    final authProvider = Provider.of<RegisterProvider>(context, listen: false);
     isLoading = true;
     final SharedPreferences prefs = await _prefs;
     await dashProvider.fetchData(prefs.getString('accessToken') ?? '', "");
-    accessToken = authProvider.accessToken!;
+    accessToken = prefs.getString('accessToken') ?? '';
     setState(() {});
     isLoading = false;
   }
@@ -241,7 +239,7 @@ class _HomePageState extends State<HomePage> {
                             if (selectedIndex == index) {
                               selectedIndex = -1;
                               setState(() {});
-
+                              print(accessToken);
                               await dashProvider.fetchData(accessToken, "");
                               return;
                               //pass empty string to api
@@ -410,13 +408,10 @@ class _HomePageState extends State<HomePage> {
                                           onPressed: () {
                                             print(
                                                 "favourite ${dashProvider.dashboard!.data[index].favourite}");
-                                            final authProvider =
-                                                Provider.of<RegisterProvider>(
-                                                    context,
-                                                    listen: false);
+
                                             dashProvider
                                                 .updateFavourite(
-                                                    authProvider.accessToken!,
+                                                    accessToken,
                                                     dashProvider.dashboard!
                                                         .data[index].id)
                                                 .then((value) {

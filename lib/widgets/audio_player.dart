@@ -78,8 +78,7 @@ class _AudioPlayerWidgetState extends State<AudioPlayerWidget> {
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(10.r),
                     image: const DecorationImage(
-                      image: NetworkImage(
-                          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsynwv-5qtogtOwJbIjaPFJUmHpzhxgqIAug&usqp=CAU"),
+                      image: AssetImage("assets/images/item.jpg"),
                       fit: BoxFit.cover,
                     ),
                   ),
