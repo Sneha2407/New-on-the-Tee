@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:new_on_the_tee/screens/providers/auth_provider.dart';
+import 'package:new_on_the_tee/screens/signup_page.dart';
 import 'package:new_on_the_tee/screens/splash.dart';
 import 'package:new_on_the_tee/utils/colors.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
 import 'package:new_on_the_tee/widgets/bottomsheets.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -13,25 +17,42 @@ class MenuPage extends StatefulWidget {
 }
 
 class _MenuPageState extends State<MenuPage> {
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<RegisterProvider>(context, listen: false);
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 40.h, horizontal: 5.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Image.asset(
-                    "assets/icons/close_circle.png",
-                    height: 22.h,
-                    width: 22.w,
-                  )),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                    onPressed: () async {
+                      final SharedPreferences prefs = await _prefs;
+                      prefs.setString('accessToken', "");
+                      // ignore: use_build_context_synchronously
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RegisterPage()),
+                      );
+                    },
+                    icon: Icon(Icons.home_rounded,
+                        color: Kcolors.black, size: 30.sp)),
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Image.asset(
+                      "assets/icons/close_circle.png",
+                      height: 22.h,
+                      width: 22.w,
+                    )),
+              ],
             ),
             SizedBox(
               height: 10.h,
@@ -107,9 +128,11 @@ class _MenuPageState extends State<MenuPage> {
                       ),
                       actions: [
                         TextButton(
-                          onPressed: () {
+                          onPressed: () async {
                             // Perform logout action
                             // Redirect to SplashPage
+                            final SharedPreferences prefs = await _prefs;
+                            prefs.setString('accessToken', "");
                             Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(

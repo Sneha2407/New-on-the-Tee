@@ -8,6 +8,7 @@ import 'package:new_on_the_tee/utils/textstyles.dart';
 import 'package:new_on_the_tee/widgets/audio_player.dart';
 import 'package:new_on_the_tee/widgets/bottomsheets.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,11 +26,13 @@ class _HomePageState extends State<HomePage> {
   bool isLoading = false;
   String accessToken = "";
   final TextEditingController _searchController = TextEditingController();
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   void getData() async {
     final dashProvider = Provider.of<DashboardProvider>(context, listen: false);
     final authProvider = Provider.of<RegisterProvider>(context, listen: false);
     isLoading = true;
-    await dashProvider.fetchData(authProvider.accessToken!, "");
+    final SharedPreferences prefs = await _prefs;
+    await dashProvider.fetchData(prefs.getString('accessToken') ?? '', "");
     accessToken = authProvider.accessToken!;
     setState(() {});
     isLoading = false;
@@ -102,7 +105,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               image: const DecorationImage(
                                   image:
-                                      AssetImage("assets/images/welcome.png"),
+                                      AssetImage("assets/images/welcome.jpg"),
                                   fit: BoxFit.cover)),
                         ),
                         SizedBox(
@@ -157,52 +160,66 @@ class _HomePageState extends State<HomePage> {
                         top: 30.h,
                         left: 15.w,
                         right: 15.w,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Welcome to \nNow on The Tee",
-                              style: mcLaren(Kcolors.white, 24)
-                                  .copyWith(fontWeight: FontWeight.w600),
-                            ),
-                            Container(
-                                height: 30.h,
-                                width: 30.w,
-                                decoration: BoxDecoration(
-                                  color: Kcolors.lightGreen.withOpacity(0.6),
-                                  borderRadius: BorderRadius.circular(5.r),
-                                ),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      PageRouteBuilder(
-                                        pageBuilder: (context, animation,
-                                                secondaryAnimation) =>
-                                            MenuPage(),
-                                        transitionsBuilder: (context, animation,
-                                            secondaryAnimation, child) {
-                                          const begin = Offset(1.0, 0.0);
-                                          const end = Offset.zero;
-                                          final tween =
-                                              Tween(begin: begin, end: end);
-                                          final offsetAnimation =
-                                              animation.drive(tween);
-
-                                          return SlideTransition(
-                                            position: offsetAnimation,
-                                            child: child,
-                                          );
-                                        },
-                                      ),
-                                    );
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5.0),
-                                    child: Image.asset("assets/icons/menu.png"),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Image.asset(
+                                "assets/icons/applogo.png",
+                                color: Kcolors.brandGreen,
+                                height: 40.h,
+                              ),
+                              SizedBox(width: 10.w),
+                              Text(
+                                "Welcome to \nNow on The Tee",
+                                style: mcLaren(Kcolors.black, 14)
+                                    .copyWith(fontWeight: FontWeight.w600),
+                              ),
+                              const Spacer(),
+                              Container(
+                                  height: 30.h,
+                                  width: 30.w,
+                                  decoration: BoxDecoration(
+                                    color: Kcolors.brandGreen,
+                                    borderRadius: BorderRadius.circular(5.r),
                                   ),
-                                ))
-                          ],
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          pageBuilder: (context, animation,
+                                                  secondaryAnimation) =>
+                                              MenuPage(),
+                                          transitionsBuilder: (context,
+                                              animation,
+                                              secondaryAnimation,
+                                              child) {
+                                            const begin = Offset(1.0, 0.0);
+                                            const end = Offset.zero;
+                                            final tween =
+                                                Tween(begin: begin, end: end);
+                                            final offsetAnimation =
+                                                animation.drive(tween);
+
+                                            return SlideTransition(
+                                              position: offsetAnimation,
+                                              child: child,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child:
+                                          Image.asset("assets/icons/menu.png"),
+                                    ),
+                                  ))
+                            ],
+                          ),
                         ))
                   ],
                 ),
@@ -337,8 +354,8 @@ class _HomePageState extends State<HomePage> {
                                                 borderRadius:
                                                     BorderRadius.circular(5.r),
                                                 image: const DecorationImage(
-                                                  image: NetworkImage(
-                                                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsynwv-5qtogtOwJbIjaPFJUmHpzhxgqIAug&usqp=CAU",
+                                                  image: AssetImage(
+                                                    "assets/images/item.jpg",
                                                   ),
                                                 ),
                                               ),

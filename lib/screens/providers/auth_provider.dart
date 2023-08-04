@@ -7,7 +7,7 @@ import 'package:new_on_the_tee/screens/home_page.dart';
 import 'package:new_on_the_tee/screens/models.dart/login_model.dart';
 import 'package:new_on_the_tee/utils/textstyles.dart';
 import 'package:new_on_the_tee/widgets/bottomsheets.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/colors.dart';
 import '../models.dart/register_model.dart';
 import 'package:http/http.dart' as http;
@@ -34,6 +34,8 @@ class RegisterProvider extends ChangeNotifier {
     loginResponseMessage = message;
     notifyListeners();
   }
+
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
 //register user method
   Future<void> postUser(String name, String email, String place, String city,
@@ -109,6 +111,8 @@ class RegisterProvider extends ChangeNotifier {
 
       setLoginMessage(loginResponse.message ?? "");
       setAccessToken(loginResponse.accessToken ?? "");
+      final SharedPreferences prefs = await _prefs;
+      prefs.setString('accessToken', loginResponse.accessToken ?? "");
 
       // Push to the home page
       Navigator.push(

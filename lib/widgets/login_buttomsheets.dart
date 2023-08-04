@@ -12,7 +12,7 @@ import 'package:provider/provider.dart';
 import '../screens/providers/storage_provider.dart';
 import '../utils/colors.dart';
 
-Future openBottomSheet(BuildContext context, Widget child) {
+Future displayBottomSheet(BuildContext context, Widget child) {
   return showModalBottomSheet(
     context: context,
     backgroundColor: Colors.grey.withOpacity(0.3),
