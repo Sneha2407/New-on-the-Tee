@@ -383,7 +383,7 @@ class Message extends StatelessWidget {
             height: 20.h,
           ),
           Text(
-            "Thank you, your account has been made. Check your email for the auto generated password and login to hear your intro at https://nowenthetee.com/login",
+            "Thank you, your account has been made. Check your email for the auto generated password and login to hear your intro",
             style: mcLaren(Kcolors.black, 14),
             textAlign: TextAlign.center,
           ),
@@ -426,9 +426,9 @@ class ChangePassword extends StatefulWidget {
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
-  bool obscureText1 = false;
-  bool obscureText2 = false;
-  bool obscureText3 = false;
+  bool obscureText1 = true;
+  bool obscureText2 = true;
+  bool obscureText3 = true;
   final formKey = GlobalKey<FormState>();
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   final TextEditingController _oldPasswordController = TextEditingController();
