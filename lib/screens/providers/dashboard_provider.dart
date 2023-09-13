@@ -31,7 +31,7 @@ class DashboardProvider with ChangeNotifier {
   //dashboard method
   Future<void> fetchData(String accessToken, String isFav) async {
     const url =
-        'https://fortmindz.co.in/nowOnTheTee_API/public/api/user/dashboard';
+        'https://www.nowonthetee.com/api/user/dashboard';
 
     final response = await http.post(
       Uri.parse(url),
@@ -55,7 +55,7 @@ class DashboardProvider with ChangeNotifier {
   //get filter data
   Future<void> fetchFilterData(
       String accessToken, String email, String name, String hometown) async {
-    const url = 'https://fortmindz.co.in/nowOnTheTee_API/public/api/search';
+    const url = 'https://www.nowonthetee.com/api/search';
 
     final response = await http.post(
       Uri.parse(url),
@@ -78,7 +78,7 @@ class DashboardProvider with ChangeNotifier {
 
   //favourite method
   Future<void> updateFavourite(String accessToken, int id) async {
-    const url = 'https://fortmindz.co.in/nowOnTheTee_API/public/api/favorite';
+    const url = 'https://www.nowonthetee.com/api/favorite';
 
     final response = await http.post(
       Uri.parse(url),
@@ -101,7 +101,7 @@ class DashboardProvider with ChangeNotifier {
     // print(ids.toString());
 
     const url =
-        'https://fortmindz.co.in/nowOnTheTee_API/public/api/delete-announcement';
+        'https://www.nowonthetee.com/api/delete-announcement';
     log(accessToken.toString());
 
     final response = await http.post(Uri.parse(url),

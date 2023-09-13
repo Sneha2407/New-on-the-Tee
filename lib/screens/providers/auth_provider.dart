@@ -40,7 +40,7 @@ class RegisterProvider extends ChangeNotifier {
 //register user method
   Future<void> postUser(String name, String email, String place, String city,
       BuildContext context) async {
-    final url = 'https://fortmindz.co.in/nowOnTheTee_API/public/api/register';
+    final url = 'https://www.nowonthetee.com/api/register';
     final body = {
       'name': name,
       'email': email,
@@ -82,7 +82,7 @@ class RegisterProvider extends ChangeNotifier {
 // login user method
   Future<void> loginUser(
       String email, String password, BuildContext context) async {
-    const url = 'https://fortmindz.co.in/nowOnTheTee_API/public/api/login';
+    const url = 'https://www.nowonthetee.com/api/login';
 
     final body = {
       'email': email,
@@ -142,7 +142,7 @@ class RegisterProvider extends ChangeNotifier {
   Future<void> changePassword(String accessToken, String oldpassword,
       String newpassword, String confirmnew) async {
     const url =
-        'https://fortmindz.co.in/nowOnTheTee_API/public/api/change-password';
+        'https://www.nowonthetee.com/api/change-password';
 
     final response = await http.post(
       Uri.parse(url),

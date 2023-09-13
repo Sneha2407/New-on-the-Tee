@@ -7,6 +7,7 @@ import 'package:new_on_the_tee/utils/textstyles.dart';
 import 'package:new_on_the_tee/widgets/audio_player.dart';
 import 'package:new_on_the_tee/widgets/bottomsheets.dart';
 import 'package:provider/provider.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -26,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   String accessToken = "";
   final TextEditingController _searchController = TextEditingController();
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  
   void getData() async {
     final dashProvider = Provider.of<DashboardProvider>(context, listen: false);
     isLoading = true;
@@ -40,6 +42,19 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     getData();
     super.initState();
+  }
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  void _onRefresh() async {
+    if (mounted) setState(() {});
+    _refreshController.refreshCompleted();
+  }
+
+  void _onLoading() async {
+    if (mounted) setState(() {});
+    _refreshController.loadComplete();
   }
 
   @override
@@ -190,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                                         PageRouteBuilder(
                                           pageBuilder: (context, animation,
                                                   secondaryAnimation) =>
-                                              MenuPage(),
+                                              const MenuPage(),
                                           transitionsBuilder: (context,
                                               animation,
                                               secondaryAnimation,
@@ -228,6 +243,7 @@ class _HomePageState extends State<HomePage> {
                 SizedBox(
                   height: 40.h,
                   child: ListView.builder(
+                    
                       scrollDirection: Axis.horizontal,
                       itemCount: 3,
                       shrinkWrap: true,
@@ -275,197 +291,230 @@ class _HomePageState extends State<HomePage> {
                               //         dashProvider.dashboard!.data.isEmpty
                               //     ? const Center(child: CircularProgressIndicator())
                               //     :
-                              ListView.builder(
-                            // shrinkWrap: true,
-                            padding: EdgeInsets.only(bottom: 50.h),
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            itemCount: dashProvider.dashboard!.data
-                                .length, // Assuming you have only one item in the list
-                            itemBuilder: (BuildContext context, int index) {
-                              return InkWell(
-                                onLongPress: () {
-                                  if (!dashProvider.isPlaying) {
-                                    setState(() {
-                                      deleteItems.add(dashProvider
-                                              .dashboard?.data[index].id
-                                              .toString() ??
-                                          "");
-                                    });
-                                    // dashProvider.addDeleteID(
-                                    //     dashProvider.dashboard![index].id);
-                                  }
-                                },
-                                onTap: () async {
-                                  if (deleteItems.contains(dashProvider
-                                      .dashboard!.data[index].id
-                                      .toString())) {
-                                    setState(() {
-                                      deleteItems.remove(dashProvider
-                                          .dashboard!.data[index].id
-                                          .toString());
-                                      play = false;
-                                    });
-                                    deleteItems.removeWhere(
-                                      (element) =>
-                                          element ==
-                                          dashProvider.dashboard!.data[index].id
-                                              .toString(),
-                                    );
-                                  } else if (deleteItems.isNotEmpty) {
-                                    setState(() {
-                                      deleteItems.add(dashProvider
-                                          .dashboard!.data[index].id
-                                          .toString());
-                                    });
-                                    deleteItems.add(dashProvider
-                                        .dashboard!.data[index].id
-                                        .toString());
-                                  } else {
-                                    if (dashProvider.isPlaying &&
-                                        dashProvider.playIndex != index) {
-                                      dashProvider.setPlay(false);
-
+                              SmartRefresher(
+                            // footer: CustomFooter(
+                            //   builder: (BuildContext context, LoadStatus mode) {
+                            //     Widget body;
+                            //     if (mode == LoadStatus.idle) {
+                            //       body = Text("pull up load");
+                            //     } else if (mode == LoadStatus.loading) {
+                            //       body = CupertinoActivityIndicator();
+                            //     } else if (mode == LoadStatus.failed) {
+                            //       body = Text("Load Failed!Click retry!");
+                            //     } else if (mode == LoadStatus.canLoading) {
+                            //       body = Text("release to load more");
+                            //     } else {
+                            //       body = Text("No more Data");
+                            //     }
+                            //     return Container(
+                            //       height: 55.0,
+                            //       child: Center(child: body),
+                            //     );
+                            //   },
+                            // ),
+                            controller: _refreshController,
+                            onLoading: () => _onLoading(),
+                            onRefresh: () => _onRefresh(),
+                            enablePullDown: true,
+                            enablePullUp: false,
+                            header: const WaterDropHeader(),
+                            child: ListView.builder(
+                              // shrinkWrap: true,
+                              padding: EdgeInsets.only(bottom: 50.h),
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemCount: dashProvider.dashboard!.data
+                                  .length, // Assuming you have only one item in the list
+                              itemBuilder: (BuildContext context, int index) {
+                                return InkWell(
+                                  onLongPress: () {
+                                    if (!dashProvider.isPlaying) {
                                       setState(() {
-                                        dashProvider.setPlayIndex(index);
+                                        deleteItems.add(dashProvider
+                                                .dashboard?.data[index].id
+                                                .toString() ??
+                                            "");
                                       });
-                                      await Future.delayed(
-                                          const Duration(milliseconds: 100));
-                                      dashProvider.setPlay(true);
-                                      // dashProvider.setPlay(true);
-                                    } else {
-                                      dashProvider.setPlayIndex(index);
-                                      dashProvider.setPlay(true);
+                                      // dashProvider.addDeleteID(
+                                      //     dashProvider.dashboard![index].id);
                                     }
-                                  }
-                                },
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Stack(
-                                          children: [
-                                            Container(
-                                              height: 45.h,
-                                              width: 45.w,
-                                              padding: EdgeInsets.all(5.w),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(5.r),
-                                                image: const DecorationImage(
-                                                  image: AssetImage(
-                                                    "assets/images/item.jpg",
+                                  },
+                                  onTap: () async {
+                                    if (deleteItems.contains(dashProvider
+                                        .dashboard!.data[index].id
+                                        .toString())) {
+                                      setState(() {
+                                        deleteItems.remove(dashProvider
+                                            .dashboard!.data[index].id
+                                            .toString());
+                                        play = false;
+                                      });
+                                      deleteItems.removeWhere(
+                                        (element) =>
+                                            element ==
+                                            dashProvider
+                                                .dashboard!.data[index].id
+                                                .toString(),
+                                      );
+                                    } else if (deleteItems.isNotEmpty) {
+                                      setState(() {
+                                        deleteItems.add(dashProvider
+                                            .dashboard!.data[index].id
+                                            .toString());
+                                      });
+                                      deleteItems.add(dashProvider
+                                          .dashboard!.data[index].id
+                                          .toString());
+                                    } else {
+                                      if (dashProvider.isPlaying &&
+                                          dashProvider.playIndex != index) {
+                                        dashProvider.setPlay(false);
+
+                                        setState(() {
+                                          dashProvider.setPlayIndex(index);
+                                        });
+                                        await Future.delayed(
+                                            const Duration(milliseconds: 100));
+                                        dashProvider.setPlay(true);
+                                        // dashProvider.setPlay(true);
+                                      } else {
+                                        dashProvider.setPlayIndex(index);
+                                        dashProvider.setPlay(true);
+                                      }
+                                    }
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Stack(
+                                            children: [
+                                              Container(
+                                                height: 45.h,
+                                                width: 45.w,
+                                                padding: EdgeInsets.all(5.w),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          5.r),
+                                                  image: const DecorationImage(
+                                                    image: AssetImage(
+                                                      "assets/images/item.jpg",
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            if (deleteItems.contains(
-                                                dashProvider
-                                                    .dashboard!.data[index].id
-                                                    .toString()))
-                                              Positioned(
-                                                right: 0,
-                                                bottom: 0,
-                                                child: CircleAvatar(
-                                                    radius: 8.r,
-                                                    backgroundColor:
-                                                        Kcolors.brandGreen,
-                                                    child: Center(
-                                                        child: Icon(
-                                                            Icons.done_rounded,
-                                                            size: 12.sp,
-                                                            color: Kcolors
-                                                                .white))),
-                                              ),
-                                          ],
-                                        ),
-                                        SizedBox(width: 10.w),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                dashProvider.dashboard!
-                                                    .data[index].name,
-                                                style: montserrat(
-                                                        Kcolors.black, 14)
-                                                    .copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600),
-                                              ),
-                                              SizedBox(height: 5.h),
-                                              Text(
-                                                "${dashProvider.dashboard!.data[index].email} | ${dashProvider.dashboard!.data[index].city}",
-                                                style: montserrat(
-                                                    Kcolors.grey400, 10),
-                                              ),
+                                              if (deleteItems.contains(
+                                                  dashProvider
+                                                      .dashboard!.data[index].id
+                                                      .toString()))
+                                                Positioned(
+                                                  right: 0,
+                                                  bottom: 0,
+                                                  child: CircleAvatar(
+                                                      radius: 8.r,
+                                                      backgroundColor:
+                                                          Kcolors.redLogout,
+                                                      child: Center(
+                                                          child: Icon(
+                                                              Icons
+                                                                  .done_rounded,
+                                                              size: 12.sp,
+                                                              color: Kcolors
+                                                                  .white))),
+                                                ),
                                             ],
                                           ),
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            print(
-                                                "favourite ${dashProvider.dashboard!.data[index].favourite}");
+                                          SizedBox(width: 10.w),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  dashProvider.dashboard!
+                                                      .data[index].name,
+                                                  style: montserrat(
+                                                          Kcolors.black, 14)
+                                                      .copyWith(
+                                                          fontWeight:
+                                                              FontWeight.w600),
+                                                ),
+                                                SizedBox(height: 5.h),
+                                                Text(
+                                                  "${dashProvider.dashboard!.data[index].email} | ${dashProvider.dashboard!.data[index].city}",
+                                                  style: montserrat(
+                                                      Kcolors.grey400, 10),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          IconButton(
+                                            onPressed: () {
+                                              print(
+                                                  "favourite ${dashProvider.dashboard!.data[index].favourite}");
 
-                                            dashProvider
-                                                .updateFavourite(
-                                                    accessToken,
-                                                    dashProvider.dashboard!
-                                                        .data[index].id)
-                                                .then((value) {
-                                              setState(() {
-                                                dashProvider
-                                                            .dashboard!
-                                                            .data[index]
-                                                            .favourite ==
-                                                        0
-                                                    ? dashProvider
-                                                        .dashboard!
-                                                        .data[index]
-                                                        .favourite = 1
-                                                    : dashProvider
-                                                        .dashboard!
-                                                        .data[index]
-                                                        .favourite = 0;
-                                              });
-                                            }).onError((error, stackTrace) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                SnackBar(
-                                                  backgroundColor: Colors.red
-                                                      .withOpacity(0.5),
-                                                  content: Text(
-                                                    'Error! Failed to update Favourite',
-                                                    style: mcLaren(
-                                                        Kcolors.white, 15),
+                                              dashProvider
+                                                  .updateFavourite(
+                                                      accessToken,
+                                                      dashProvider.dashboard!
+                                                          .data[index].id)
+                                                  .then((value) {
+                                                setState(() {
+                                                  dashProvider
+                                                              .dashboard!
+                                                              .data[index]
+                                                              .favourite ==
+                                                          0
+                                                      ? dashProvider
+                                                          .dashboard!
+                                                          .data[index]
+                                                          .favourite = 1
+                                                      : dashProvider
+                                                          .dashboard!
+                                                          .data[index]
+                                                          .favourite = 0;
+                                                });
+                                              }).onError((error, stackTrace) {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    backgroundColor: Colors.red
+                                                        .withOpacity(0.5),
+                                                    content: Text(
+                                                      'Error! Failed to update Favourite',
+                                                      style: mcLaren(
+                                                          Kcolors.white, 15),
+                                                    ),
                                                   ),
-                                                ),
-                                              );
-                                            });
-                                          },
-                                          icon: dashProvider.dashboard!
-                                                      .data[index].favourite ==
-                                                  0
-                                              ? Icon(
-                                                  Icons.favorite_border,
-                                                  color: Kcolors.grey400,
-                                                  size: 20.sp,
-                                                )
-                                              : Icon(
-                                                  Icons.favorite,
-                                                  color: Kcolors.brandGreen,
-                                                  size: 20.sp,
-                                                ),
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: 5.h),
-                                  ],
-                                ),
-                              );
-                            },
+                                                );
+                                              });
+                                            },
+                                            icon: dashProvider
+                                                        .dashboard!
+                                                        .data[index]
+                                                        .favourite ==
+                                                    0
+                                                ? Icon(
+                                                    Icons.favorite_border,
+                                                    color: Kcolors.grey400,
+                                                    size: 20.sp,
+                                                  )
+                                                : Icon(
+                                                    Icons.favorite,
+                                                    color: Kcolors.brandGreen,
+                                                    size: 20.sp,
+                                                  ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 5.h),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
